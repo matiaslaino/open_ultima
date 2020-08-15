@@ -11,6 +11,7 @@ and may not be redistributed without written permission.*/
 #include "src/overworld/TileType.h"
 #include "src/overworld/Tile.h"
 #include "src/CGALinearRenderStrategy.h"
+#include "src/EGARowPlanarRenderStrategy.h"
 #include <memory>
 #include <filesystem>
 #include <iostream>>
@@ -245,13 +246,14 @@ int main(int argc, char* args[])
 			//}
 
 			SDL_RWops* file = SDL_RWFromFile("F:\\GOGLibrary\\Ultima 1\\CGATILES.BIN", "r+b");
-			uint8_t gData[64];
+			constexpr int bytesPerTile = 64;
+			uint8_t gData[bytesPerTile];
 			std::vector<OpenUltima::Tile> tiles = {};
 			auto indexY = 0;
 			auto indexX = 0;
-			for (int i = 0; i < (0xD00 / 64); i++)
+			for (int i = 0; i < 52; i++)
 			{
-				SDL_RWread(file, &gData[0], 1, 64);
+				SDL_RWread(file, &gData[0], 1, bytesPerTile);
 				vector<uint8_t> bytes(begin(gData), end(gData));
 				auto tileType = make_shared<TileType>(TileType(i, 16, 16, bytes));
 				
@@ -261,12 +263,36 @@ int main(int argc, char* args[])
 					indexY += 16;
 				}
 
-				auto tile = OpenUltima::Tile(indexX, indexY, tileType, make_shared<CGALinearRenderStrategy>(CGALinearRenderStrategy()));
+				auto tile = OpenUltima::Tile(indexX, indexY, tileType, make_shared<LinearCGARenderStrategy>(LinearCGARenderStrategy()));
 				tiles.push_back(tile);
 			}
 
 			SDL_RWclose(file);
-			//auto renderer = unique_ptr<SDL_Renderer, SDL_Deleter>(gRenderer);
+			
+
+			file = SDL_RWFromFile("F:\\GOGLibrary\\Ultima 1\\EGATILES.BIN", "r+b");
+			constexpr int egaBytesPerTile = 128;
+			uint8_t egaDataBuffer[egaBytesPerTile];
+			indexX = 0;
+			vector<Tile> egaTiles = {};
+			for (int i = 0; i < 52; i++)
+			{
+				SDL_RWread(file, &egaDataBuffer[0], 1, egaBytesPerTile);
+				vector<uint8_t> bytes(begin(egaDataBuffer), end(egaDataBuffer));
+				auto tileType = make_shared<TileType>(TileType(i, 16, 16, bytes));
+
+				indexX += 16;
+				if (indexX > 200) {
+					indexX = 0;
+					indexY += 16;
+				}
+
+				auto tile = OpenUltima::Tile(indexX, indexY, tileType, make_shared<EGARowPlanarRenderStrategy>(EGARowPlanarRenderStrategy()));
+				egaTiles.push_back(tile);
+			}
+
+			SDL_RWclose(file);
+
 			SDL_RenderSetLogicalSize(gRenderer, 320, 200);
 
 
@@ -292,6 +318,10 @@ int main(int argc, char* args[])
 				*/
 
 				for (auto tile : tiles)
+				{
+					tile.Draw(gRenderer);
+				}
+				for (auto tile : egaTiles)
 				{
 					tile.Draw(gRenderer);
 				}

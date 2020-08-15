@@ -30,6 +30,9 @@
     <ClCompile Include="src\CGALinearRenderStrategy.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\EGARowPlanarRenderStrategy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\TileRenderStrategy.h">
@@ -42,6 +45,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\CGALinearRenderStrategy.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\EGARowPlanarRenderStrategy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

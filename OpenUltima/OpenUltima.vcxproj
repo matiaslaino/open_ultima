@@ -146,6 +146,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\EGARowPlanarRenderStrategy.cpp" />
     <ClCompile Include="src\CGALinearRenderStrategy.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\overworld\Tile.cpp" />
@@ -153,6 +154,7 @@
     <ClCompile Include="src\overworld\TileType.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\EGARowPlanarRenderStrategy.h" />
     <ClInclude Include="src\CGALinearRenderStrategy.h" />
     <ClInclude Include="src\overworld\Tile.h" />
     <ClInclude Include="src\TileRenderStrategy.h" />

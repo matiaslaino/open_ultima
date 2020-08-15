@@ -5,7 +5,7 @@
 using namespace std;
 using namespace OpenUltima;
 
-void CGALinearRenderStrategy::Draw(SDL_Renderer* renderer, SDL_Rect box, vector<uint8_t> bytes)
+void LinearCGARenderStrategy::Draw(SDL_Renderer* renderer, SDL_Rect box, vector<uint8_t> bytes)
 {
 	int byteIndex = 0;
 	for (int row = 0; row < box.h; row++) {
@@ -26,7 +26,7 @@ void CGALinearRenderStrategy::Draw(SDL_Renderer* renderer, SDL_Rect box, vector<
 }
 
 
-void CGALinearRenderStrategy::DrawPixel(SDL_Renderer* renderer, int x, int y, int colorData) {
+void LinearCGARenderStrategy::DrawPixel(SDL_Renderer* renderer, int x, int y, int colorData) {
 	if (colorData == 0b00) {
 		// black
 		SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0x00);
