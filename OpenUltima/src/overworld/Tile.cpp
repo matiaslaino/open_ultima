@@ -22,7 +22,17 @@ void Tile::Draw(SDL_Renderer* renderer, SDL_Rect camera) {
     if (IsVisible(camera)) {
         SDL_Rect renderQuad = { _box.x - camera.x, _box.y - camera.y, _box.w, _box.h };
 
-	    SDL_RenderCopyEx(renderer, _type->GetTexture(), NULL, &renderQuad, 0, NULL, SDL_FLIP_NONE);
+	    SDL_RenderCopyEx(renderer, _type->GetTexture(), &_type->GetFrame(_currentAnimationFrame), &renderQuad, 0, NULL, SDL_FLIP_NONE);
+    }
+}
+
+void OpenUltima::Tile::Update(float timeElapsed)
+{
+    _animationCounter += timeElapsed;
+
+    if (_animationCounter >= 3) {
+        _animationCounter = 0;
+        _currentAnimationFrame = (_currentAnimationFrame + 1) % _type->GetAnimationFramesCount();
     }
 }
 

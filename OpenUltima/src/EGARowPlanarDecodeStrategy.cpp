@@ -1,8 +1,8 @@
-#include "EGARowPlanarRenderStrategy.h"
+#include "EGARowPlanarDecodeStrategy.h"
 
 using namespace OpenUltima;
 
-uint32_t EGARowPlanarRenderStrategy::GetPixel(int colorData) {
+uint32_t EGARowPlanarDecodeStrategy::GetPixel(int colorData) {
 	// EGA palette is 16 colors only.
 	switch (colorData) {
 	case 1:
@@ -71,7 +71,7 @@ uint32_t EGARowPlanarRenderStrategy::GetPixel(int colorData) {
 	}
 }
 
-vector<uint32_t> OpenUltima::EGARowPlanarRenderStrategy::GetPixels(vector<uint8_t> bytes)
+vector<uint32_t> OpenUltima::EGARowPlanarDecodeStrategy::GetPixels(vector<uint8_t> bytes)
 {
 	vector<uint32_t> pixels;
 	/*

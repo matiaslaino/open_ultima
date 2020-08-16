@@ -1,11 +1,11 @@
-#include "CGALinearRenderStrategy.h"
+#include "CGALinearDecodeStrategy.h"
 #include <SDL.h>
 #include <vector>
 
 using namespace std;
 using namespace OpenUltima;
 
-uint32_t LinearCGARenderStrategy::GetPixel(int colorData) {
+uint32_t CGALinearDecodeStrategy::GetPixel(int colorData) {
 	if (colorData == 0b11)
 	{
 		// white
@@ -28,11 +28,12 @@ uint32_t LinearCGARenderStrategy::GetPixel(int colorData) {
 	return 0x00000000;
 }
 
-vector<uint32_t> OpenUltima::LinearCGARenderStrategy::GetPixels(vector<uint8_t> bytes)
+vector<uint32_t> OpenUltima::CGALinearDecodeStrategy::GetPixels(vector<uint8_t> bytes)
 {
 	// In CGA Linear, each byte represents 4 pixel, meaning 2 bits specify the color of a single pixel.
 	vector<uint32_t> pixels;
 	int byteIndex = 0;
+	
 	for (auto byte : bytes) {
 		auto pixel4 = byte & 0b00000011;
 		auto pixel3 = (byte & 0b00001100) >> 2;

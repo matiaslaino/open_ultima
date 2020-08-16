@@ -146,18 +146,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\EGARowPlanarRenderStrategy.cpp" />
-    <ClCompile Include="src\CGALinearRenderStrategy.cpp" />
+    <ClCompile Include="src\LTimer.cpp" />
+    <ClCompile Include="src\EGARowPlanarDecodeStrategy.cpp" />
+    <ClCompile Include="src\CGALinearDecodeStrategy.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\overworld\Tile.cpp" />
-    <ClCompile Include="src\TileRenderStrategy.cpp" />
     <ClCompile Include="src\overworld\TileType.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\EGARowPlanarRenderStrategy.h" />
-    <ClInclude Include="src\CGALinearRenderStrategy.h" />
+    <ClInclude Include="src\LTimer.h" />
+    <ClInclude Include="src\EGARowPlanarDecodeStrategy.h" />
+    <ClInclude Include="src\CGALinearDecodeStrategy.h" />
     <ClInclude Include="src\overworld\Tile.h" />
-    <ClInclude Include="src\TileRenderStrategy.h" />
+    <ClInclude Include="src\PixelDecodeStrategy.h" />
     <ClInclude Include="src\overworld\TileType.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

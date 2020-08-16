@@ -10,12 +10,13 @@ and may not be redistributed without written permission.*/
 #include <cmath>
 #include "src/overworld/TileType.h"
 #include "src/overworld/Tile.h"
-#include "src/CGALinearRenderStrategy.h"
-#include "src/EGARowPlanarRenderStrategy.h"
+#include "src/CGALinearDecodeStrategy.h"
+#include "src/EGARowPlanarDecodeStrategy.h"
 #include <memory>
 #include <filesystem>
-#include <iostream>>
+#include <iostream>
 #include <fstream>
+#include "src/LTimer.h"
 
 using namespace std;
 using namespace OpenUltima;
@@ -75,7 +76,7 @@ bool init()
 			{
 				printf("Warning: Linear texture filtering not enabled!");
 			}
-			
+
 			//Create renderer for window
 			gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 			if (gRenderer == NULL)
@@ -206,57 +207,65 @@ int main(int argc, char* args[])
 
 			SDL_RWops* file = SDL_RWFromFile("F:\\GOGLibrary\\Ultima 1\\CGATILES.BIN", "r+b");
 			constexpr int bytesPerTile = 64;
-			uint8_t gData[bytesPerTile];
-			std::vector<OpenUltima::Tile> tiles = {};
+			uint8_t gData[bytesPerTile * 2];
+			std::vector<shared_ptr<OpenUltima::Tile>> tiles = {};
 			auto indexY = 0;
 			auto indexX = 0;
-			for (int i = 0; i < 52; i++)
-			{
-				SDL_RWread(file, &gData[0], 1, bytesPerTile);
-				vector<uint8_t> bytes(begin(gData), end(gData));
-				shared_ptr<TileType> tileType = make_shared<TileType>(i, 16, 16, bytes, gRenderer);
-				tileType->setRenderStrategy(make_shared<LinearCGARenderStrategy>());
+			SDL_RWseek(file, bytesPerTile * 4, RW_SEEK_SET);
+			//for (int i = 0; i < 52; i++)
+			//{
+			SDL_RWread(file, &gData[0], 1, bytesPerTile);
+			vector<uint8_t> bytes1(begin(gData), end(gData));
+			SDL_RWread(file, &gData[0], 1, bytesPerTile);
+			vector<uint8_t> bytes2(begin(gData), end(gData));
+			vector<vector<uint8_t>> v = { bytes1, bytes2 };
+			shared_ptr<TileType> tileType = make_shared<TileType>(1, 16, 16, v, gRenderer, 2);
+			tileType->setRenderStrategy(make_shared<CGALinearDecodeStrategy>());
 
-				indexX += 16;
-				if (indexX > 200) {
-					indexX = 0;
-					indexY += 16;
-				}
+			auto tile = make_shared<Tile>(indexX, indexY, tileType);
+			tiles.push_back(tile);
 
-				auto tile = OpenUltima::Tile(indexX, indexY, tileType);
-				tiles.push_back(ref(tile));
+			indexX += 16;
+			if (indexX > 200) {
+				indexX = 0;
+				indexY += 16;
 			}
+			//}
 
+			indexY += 16;
 			SDL_RWclose(file);
-			
+
 
 			file = SDL_RWFromFile("F:\\GOGLibrary\\Ultima 1\\EGATILES.BIN", "r+b");
 			constexpr int egaBytesPerTile = 128;
 			uint8_t egaDataBuffer[egaBytesPerTile];
 			indexX = 0;
 			vector<Tile> egaTiles = {};
-			for (int i = 0; i < 52; i++)
+			/*for (int i = 0; i < 52; i++)
 			{
 				SDL_RWread(file, &egaDataBuffer[0], 1, egaBytesPerTile);
 				vector<uint8_t> bytes(begin(egaDataBuffer), end(egaDataBuffer));
 				auto tileType = make_shared<TileType>(i, 16, 16, bytes, gRenderer);
 				tileType->setRenderStrategy(make_shared<EGARowPlanarRenderStrategy>());
 
+				auto tile = OpenUltima::Tile(indexX, indexY, tileType);
+				egaTiles.push_back(tile);
+
 				indexX += 16;
 				if (indexX > 200) {
 					indexX = 0;
 					indexY += 16;
 				}
-
-				auto tile = OpenUltima::Tile(indexX, indexY, tileType);
-				egaTiles.push_back(tile);
-			}
+			}*/
 
 			SDL_RWclose(file);
 
 			SDL_RenderSetLogicalSize(gRenderer, 320, 200);
 
 			SDL_Rect camera = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
+
+			//Keeps track of time between steps
+			LTimer stepTimer;
 
 			//While application is running
 			while (!quit)
@@ -268,7 +277,8 @@ int main(int argc, char* args[])
 					if (e.type == SDL_QUIT)
 					{
 						quit = true;
-					} else if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
+					}
+					else if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
 					{
 						//Adjust the velocity
 						switch (e.key.keysym.sym)
@@ -281,13 +291,24 @@ int main(int argc, char* args[])
 					}
 				}
 
+				//Calculate time step
+				float timeStep = stepTimer.getTicks() / 1000.f;
+
+				for (auto tile : tiles)
+				{
+					tile->Update(timeStep);
+				}
+
+				//Restart step timer
+				stepTimer.start();
+
 				//Clear screen
 				SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 				SDL_RenderClear(gRenderer);
 
 				for (auto tile : tiles)
 				{
-					tile.Draw(gRenderer, camera);
+					tile->Draw(gRenderer, camera);
 				}
 				for (auto tile : egaTiles)
 				{

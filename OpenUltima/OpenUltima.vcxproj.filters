@@ -18,36 +18,39 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\TileRenderStrategy.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\overworld\Tile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\overworld\TileType.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\CGALinearRenderStrategy.cpp">
+    <ClCompile Include="src\LTimer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\EGARowPlanarRenderStrategy.cpp">
+    <ClCompile Include="src\EGARowPlanarDecodeStrategy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CGALinearDecodeStrategy.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\TileRenderStrategy.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\overworld\Tile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\overworld\TileType.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\CGALinearRenderStrategy.h">
+    <ClInclude Include="src\LTimer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\EGARowPlanarRenderStrategy.h">
+    <ClInclude Include="src\PixelDecodeStrategy.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\EGARowPlanarDecodeStrategy.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CGALinearDecodeStrategy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

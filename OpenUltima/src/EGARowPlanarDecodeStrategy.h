@@ -1,10 +1,10 @@
 #pragma once
-#include "TileRenderStrategy.h"
+#include "PixelDecodeStrategy.h"
 
 namespace OpenUltima {
 
-	class EGARowPlanarRenderStrategy :
-		public TileRenderStrategy
+	class EGARowPlanarDecodeStrategy :
+		public PixelDecodeStrategy
 	{
 	public:
 		vector<uint32_t> GetPixels(vector<uint8_t> bytes) override;

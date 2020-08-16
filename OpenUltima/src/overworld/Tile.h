@@ -1,7 +1,7 @@
 #pragma once
 #include <SDL.h>
 #include <memory>
-#include "../TileRenderStrategy.h"
+#include "../PixelDecodeStrategy.h"
 
 using namespace std;
 
@@ -11,6 +11,7 @@ namespace OpenUltima {
 	public:
 		Tile(int x, int y, const shared_ptr<TileType>& tileType);
 		void Draw(SDL_Renderer* renderer, SDL_Rect camera);
+		void Update(float timeElapsed);
 
 	private:
 		static constexpr int TILE_WIDTH = 16;
@@ -18,8 +19,10 @@ namespace OpenUltima {
 		
 		SDL_Rect _box;
 		shared_ptr<TileType> _type;
-		shared_ptr<TileRenderStrategy> _renderStrategy;
+		shared_ptr<PixelDecodeStrategy> _renderStrategy;
 		bool IsVisible(SDL_Rect camera);
+		int _currentAnimationFrame = 0;
+		float _animationCounter = 0;
 	};
 }
 

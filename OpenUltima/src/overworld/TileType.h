@@ -3,7 +3,7 @@
 #include <vector>
 #include <SDL.h>
 #include <memory>
-#include "../TileRenderStrategy.h"
+#include "../PixelDecodeStrategy.h"
 
 using namespace std;
 using namespace OpenUltima;
@@ -11,20 +11,23 @@ using namespace OpenUltima;
 class TileType
 {
 public:
-	TileType(int tileType, int tileWidth, int tileHeight, vector<uint8_t> definition);
-	TileType(int tileType, int tileWidth, int tileHeight, vector<uint8_t> definition, SDL_Renderer* renderer);
-	vector<uint8_t> getDefinition() const;
+	TileType(int tileType, int tileWidth, int tileHeight, vector<vector<uint8_t>> definition, SDL_Renderer* renderer, int animationFrames = 1);
+	vector<vector<uint8_t>> getDefinition() const;
 	int getHeight() const;
 	int getWidth() const;
-	void setRenderStrategy(shared_ptr<TileRenderStrategy> renderStrategy);
+	void setRenderStrategy(shared_ptr<PixelDecodeStrategy> renderStrategy);
 	SDL_Texture* GetTexture();
 	~TileType();
+	SDL_Rect GetFrame(int frame);
+	int GetAnimationFramesCount();
 
 private:
-	vector<uint8_t> _definition;
+	vector<vector<uint8_t>> _definition;
 	int _height;
 	int _width;
 	SDL_Texture* _texture;
-	void renderTexture(shared_ptr<TileRenderStrategy> renderStrategy);
+	void renderTexture(shared_ptr<PixelDecodeStrategy> renderStrategy);
+	vector<SDL_Rect> _animationClips;
+	int _animationFramesCount;
 };
 
