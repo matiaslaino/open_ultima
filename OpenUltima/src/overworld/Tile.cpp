@@ -19,8 +19,7 @@ Tile::Tile(int x, int y, const shared_ptr<TileType>& tileType, const shared_ptr<
 	_renderStrategy = renderStrategy;
 }
 
-void Tile::Draw(SDL_Renderer* renderer)
-{
-	_renderStrategy->Draw(renderer, _box, _type->getDefinition());
+void Tile::Draw(SDL_Renderer* renderer) {
+	SDL_RenderCopyEx(renderer, _type->GetTexture(), NULL, &_box, 0, NULL, SDL_FLIP_NONE);
 }
 

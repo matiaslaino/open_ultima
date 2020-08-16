@@ -7,10 +7,9 @@ namespace OpenUltima {
 		public TileRenderStrategy
 	{
 	public:
-		void Draw(SDL_Renderer* renderer, SDL_Rect box, vector<uint8_t> bytes) override;
-
+		vector<uint32_t> GetPixels(vector<uint8_t> bytes) override;
 	private:
-		void DrawPixel(SDL_Renderer* renderer, int x, int y, int colorData);
+		uint32_t GetPixel(int colorData);
 	};
 }
 

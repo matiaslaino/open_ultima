@@ -62,7 +62,7 @@ bool init()
 		}
 
 		//Create window
-		gWindow = SDL_CreateWindow("SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+		gWindow = SDL_CreateWindow("Mystery game", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 		if (gWindow == NULL)
 		{
 			printf("Window could not be created! SDL Error: %s\n", SDL_GetError());
@@ -70,8 +70,14 @@ bool init()
 		}
 		else
 		{
+			//Set texture filtering to linear
+			if (!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1"))
+			{
+				printf("Warning: Linear texture filtering not enabled!");
+			}
+			
 			//Create renderer for window
-			gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED);
+			gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 			if (gRenderer == NULL)
 			{
 				printf("Renderer could not be created! SDL Error: %s\n", SDL_GetError());
@@ -145,13 +151,13 @@ SDL_Texture* loadTexture(std::string path)
 	return newTexture;
 }
 
-struct SDL_Deleter {
-	void operator()(SDL_Surface* ptr) { if (ptr) SDL_FreeSurface(ptr); }
-	void operator()(SDL_Texture* ptr) { if (ptr) SDL_DestroyTexture(ptr); }
-	void operator()(SDL_Renderer* ptr) { if (ptr) SDL_DestroyRenderer(ptr); }
-	void operator()(SDL_Window* ptr) { if (ptr) SDL_DestroyWindow(ptr); }
-	void operator()(SDL_RWops* ptr) { if (ptr) SDL_RWclose(ptr); }
-};
+//struct SDL_Deleter {
+//	void operator()(SDL_Surface* ptr) { if (ptr) SDL_FreeSurface(ptr); }
+//	void operator()(SDL_Texture* ptr) { if (ptr) SDL_DestroyTexture(ptr); }
+//	void operator()(SDL_Renderer* ptr) { if (ptr) SDL_DestroyRenderer(ptr); }
+//	void operator()(SDL_Window* ptr) { if (ptr) SDL_DestroyWindow(ptr); }
+//	void operator()(SDL_RWops* ptr) { if (ptr) SDL_RWclose(ptr); }
+//};
 
 //std::vector<uint8_t> load_file(std::string const& filepath)
 //{
@@ -198,53 +204,6 @@ int main(int argc, char* args[])
 			//Event handler
 			SDL_Event e;
 
-			auto tileType = make_shared<TileType>(TileType(11, 16, 16, 
-				{ 
-					0b00110011, 0, 0, 0, 
-					0, 0b00110011, 0, 0,
-					0, 0, 0b00110011, 0,
-					0, 0, 0, 0b00110011,
-					0b00110011, 0, 0, 0,
-					0, 0b00110011, 0, 0,
-					0, 0, 0b00110011, 0,
-					0, 0, 0, 0b00110011,
-					0b00110011, 0, 0, 0,
-					0, 0b00110011, 0, 0,
-					0, 0, 0b00110011, 0,
-					0, 0, 0, 0b00110011,
-					0b00110011, 0, 0, 0,
-					0, 0b00110011, 0, 0,
-					0, 0, 0b00110011, 0,
-					0, 0, 0, 0b00110011,
-				}));
-			
-			auto tileType2 = make_shared<TileType>(TileType(12, 16, 16, 
-				{ 
-					0x00, 0x10, 0x00, 0x00,
-					0x00, 0x00, 0x04, 0x00,
-					0x40, 0x00, 0x00, 0x00,
-					0x00, 0x01, 0x00, 0x00,
-					0x00, 0x00, 0x00, 0x00,
-					0x00, 0x00, 0x00, 0x40,
-					0x10, 0x00, 0x00, 0x00,
-					0x00, 0x00, 0x00, 0x00,
-					0x00, 0x10, 0x00, 0x00,
-					0x00, 0x00, 0x00, 0x40,
-					0x04, 0x00, 0x00, 0x00,
-					0x00, 0x00, 0x40, 0x00,
-					0x00, 0x00, 0x00, 0x04,
-					0x00, 0x00, 0x00, 0x00,
-					0x10, 0x00, 0x00, 0x00,
-					0x00, 0x00, 0x01, 0x00
-				}));
-			//auto tile = make_unique<Tile>(Tile(0, 0, tileType));
-			//auto tile2 = make_unique<Tile>(Tile(16, 0, tileType2));
-
-			//auto cgatilesContent = load_file("F:\\GOGLibrary\\Ultima 1\\CGATILES.BIN");
-			//for (uint8_t byte : cgatilesContent) {
-
-			//}
-
 			SDL_RWops* file = SDL_RWFromFile("F:\\GOGLibrary\\Ultima 1\\CGATILES.BIN", "r+b");
 			constexpr int bytesPerTile = 64;
 			uint8_t gData[bytesPerTile];
@@ -255,8 +214,9 @@ int main(int argc, char* args[])
 			{
 				SDL_RWread(file, &gData[0], 1, bytesPerTile);
 				vector<uint8_t> bytes(begin(gData), end(gData));
-				auto tileType = make_shared<TileType>(TileType(i, 16, 16, bytes));
-				
+				auto tileType = make_shared<TileType>(TileType(i, 16, 16, bytes, gRenderer));
+				tileType->setRenderStrategy(make_shared<LinearCGARenderStrategy>(LinearCGARenderStrategy()));
+
 				indexX += 16;
 				if (indexX > 200) {
 					indexX = 0;
@@ -279,7 +239,8 @@ int main(int argc, char* args[])
 			{
 				SDL_RWread(file, &egaDataBuffer[0], 1, egaBytesPerTile);
 				vector<uint8_t> bytes(begin(egaDataBuffer), end(egaDataBuffer));
-				auto tileType = make_shared<TileType>(TileType(i, 16, 16, bytes));
+				auto tileType = make_shared<TileType>(TileType(i, 16, 16, bytes, gRenderer));
+				tileType->setRenderStrategy(make_shared<EGARowPlanarRenderStrategy>(EGARowPlanarRenderStrategy()));
 
 				indexX += 16;
 				if (indexX > 200) {
@@ -312,10 +273,6 @@ int main(int argc, char* args[])
 				//Clear screen
 				SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 				SDL_RenderClear(gRenderer);
-
-				/*tile->Draw(gRenderer);
-				tile2->Draw(gRenderer);
-				*/
 
 				for (auto tile : tiles)
 				{
