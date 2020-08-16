@@ -49,3 +49,10 @@ void TileType::renderTexture(shared_ptr<TileRenderStrategy> renderStrategy) {
 	auto pixelData = pixels.data();
 	SDL_UpdateTexture(_texture, NULL, pixels.data(), _width * sizeof(uint32_t));
 }
+
+TileType::~TileType()
+{
+	if (_texture != nullptr) SDL_DestroyTexture(_texture);
+	_texture = nullptr;
+}
+

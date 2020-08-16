@@ -214,8 +214,8 @@ int main(int argc, char* args[])
 			{
 				SDL_RWread(file, &gData[0], 1, bytesPerTile);
 				vector<uint8_t> bytes(begin(gData), end(gData));
-				auto tileType = make_shared<TileType>(TileType(i, 16, 16, bytes, gRenderer));
-				tileType->setRenderStrategy(make_shared<LinearCGARenderStrategy>(LinearCGARenderStrategy()));
+				shared_ptr<TileType> tileType = make_shared<TileType>(i, 16, 16, bytes, gRenderer);
+				tileType->setRenderStrategy(make_shared<LinearCGARenderStrategy>());
 
 				indexX += 16;
 				if (indexX > 200) {
@@ -223,8 +223,8 @@ int main(int argc, char* args[])
 					indexY += 16;
 				}
 
-				auto tile = OpenUltima::Tile(indexX, indexY, tileType, make_shared<LinearCGARenderStrategy>(LinearCGARenderStrategy()));
-				tiles.push_back(tile);
+				auto tile = OpenUltima::Tile(indexX, indexY, tileType);
+				tiles.push_back(ref(tile));
 			}
 
 			SDL_RWclose(file);
@@ -239,8 +239,8 @@ int main(int argc, char* args[])
 			{
 				SDL_RWread(file, &egaDataBuffer[0], 1, egaBytesPerTile);
 				vector<uint8_t> bytes(begin(egaDataBuffer), end(egaDataBuffer));
-				auto tileType = make_shared<TileType>(TileType(i, 16, 16, bytes, gRenderer));
-				tileType->setRenderStrategy(make_shared<EGARowPlanarRenderStrategy>(EGARowPlanarRenderStrategy()));
+				auto tileType = make_shared<TileType>(i, 16, 16, bytes, gRenderer);
+				tileType->setRenderStrategy(make_shared<EGARowPlanarRenderStrategy>());
 
 				indexX += 16;
 				if (indexX > 200) {
@@ -248,7 +248,7 @@ int main(int argc, char* args[])
 					indexY += 16;
 				}
 
-				auto tile = OpenUltima::Tile(indexX, indexY, tileType, make_shared<EGARowPlanarRenderStrategy>(EGARowPlanarRenderStrategy()));
+				auto tile = OpenUltima::Tile(indexX, indexY, tileType);
 				egaTiles.push_back(tile);
 			}
 
@@ -256,6 +256,7 @@ int main(int argc, char* args[])
 
 			SDL_RenderSetLogicalSize(gRenderer, 320, 200);
 
+			SDL_Rect camera = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
 
 			//While application is running
 			while (!quit)
@@ -267,6 +268,16 @@ int main(int argc, char* args[])
 					if (e.type == SDL_QUIT)
 					{
 						quit = true;
+					} else if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
+					{
+						//Adjust the velocity
+						switch (e.key.keysym.sym)
+						{
+						case SDLK_UP: camera.y += 10; break;
+						case SDLK_DOWN: camera.y -= 10; break;
+						case SDLK_LEFT: camera.x += 10; break;
+						case SDLK_RIGHT: camera.x -= 10; break;
+						}
 					}
 				}
 
@@ -276,11 +287,11 @@ int main(int argc, char* args[])
 
 				for (auto tile : tiles)
 				{
-					tile.Draw(gRenderer);
+					tile.Draw(gRenderer, camera);
 				}
 				for (auto tile : egaTiles)
 				{
-					tile.Draw(gRenderer);
+					tile.Draw(gRenderer, camera);
 				}
 
 				//Update screen

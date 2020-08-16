@@ -30,6 +30,7 @@ uint32_t LinearCGARenderStrategy::GetPixel(int colorData) {
 
 vector<uint32_t> OpenUltima::LinearCGARenderStrategy::GetPixels(vector<uint8_t> bytes)
 {
+	// In CGA Linear, each byte represents 4 pixel, meaning 2 bits specify the color of a single pixel.
 	vector<uint32_t> pixels;
 	int byteIndex = 0;
 	for (auto byte : bytes) {

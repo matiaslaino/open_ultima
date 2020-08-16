@@ -18,6 +18,8 @@ public:
 	int getWidth() const;
 	void setRenderStrategy(shared_ptr<TileRenderStrategy> renderStrategy);
 	SDL_Texture* GetTexture();
+	~TileType();
+
 private:
 	vector<uint8_t> _definition;
 	int _height;
