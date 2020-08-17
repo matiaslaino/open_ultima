@@ -9,7 +9,7 @@ namespace OpenUltima {
 	class Tile
 	{
 	public:
-		Tile(int x, int y, const shared_ptr<TileType>& tileType);
+		Tile(int x, int y, const shared_ptr<TileType>& tileType, shared_ptr<TileAnimationStrategy> tileAnimationStrategy);
 		void Draw(SDL_Renderer* renderer, SDL_Rect camera);
 		void Update(float timeElapsed);
 
@@ -21,8 +21,7 @@ namespace OpenUltima {
 		shared_ptr<TileType> _type;
 		shared_ptr<PixelDecodeStrategy> _renderStrategy;
 		bool IsVisible(SDL_Rect camera);
-		int _currentAnimationFrame = 0;
-		float _animationCounter = 0;
+		shared_ptr<TileAnimationStrategy> _tileAnimationStrategy;
 	};
 }
 

@@ -146,20 +146,27 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\LTimer.cpp" />
+    <ClCompile Include="src\common\LTexture.cpp" />
+    <ClCompile Include="src\HorizontalSwapTileAnimation.cpp" />
+    <ClCompile Include="src\common\LTimer.cpp" />
     <ClCompile Include="src\EGARowPlanarDecodeStrategy.cpp" />
     <ClCompile Include="src\CGALinearDecodeStrategy.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\overworld\Tile.cpp" />
     <ClCompile Include="src\overworld\TileType.cpp" />
+    <ClCompile Include="src\VerticalScrollingTileAnimation.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\LTimer.h" />
+    <ClInclude Include="src\common\LTexture.h" />
+    <ClInclude Include="src\HorizontalSwapTileAnimation.h" />
+    <ClInclude Include="src\common\LTimer.h" />
     <ClInclude Include="src\EGARowPlanarDecodeStrategy.h" />
     <ClInclude Include="src\CGALinearDecodeStrategy.h" />
     <ClInclude Include="src\overworld\Tile.h" />
     <ClInclude Include="src\PixelDecodeStrategy.h" />
     <ClInclude Include="src\overworld\TileType.h" />
+    <ClInclude Include="src\TileAnimationStrategy.h" />
+    <ClInclude Include="src\VerticalScrollingTileAnimation.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

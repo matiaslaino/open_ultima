@@ -16,7 +16,8 @@ and may not be redistributed without written permission.*/
 #include <filesystem>
 #include <iostream>
 #include <fstream>
-#include "src/LTimer.h"
+#include "src/common/LTimer.h"
+#include "src/HorizontalSwapTileAnimation.h"
 
 using namespace std;
 using namespace OpenUltima;
@@ -211,18 +212,20 @@ int main(int argc, char* args[])
 			std::vector<shared_ptr<OpenUltima::Tile>> tiles = {};
 			auto indexY = 0;
 			auto indexX = 0;
-			SDL_RWseek(file, bytesPerTile * 4, RW_SEEK_SET);
+			SDL_RWseek(file, bytesPerTile * 0, RW_SEEK_SET);
 			//for (int i = 0; i < 52; i++)
 			//{
 			SDL_RWread(file, &gData[0], 1, bytesPerTile);
 			vector<uint8_t> bytes1(begin(gData), end(gData));
-			SDL_RWread(file, &gData[0], 1, bytesPerTile);
-			vector<uint8_t> bytes2(begin(gData), end(gData));
-			vector<vector<uint8_t>> v = { bytes1, bytes2 };
-			shared_ptr<TileType> tileType = make_shared<TileType>(1, 16, 16, v, gRenderer, 2);
+			//SDL_RWread(file, &gData[0], 1, bytesPerTile);
+			//vector<uint8_t> bytes2(begin(gData), end(gData));
+			vector<vector<uint8_t>> v = { bytes1, bytes1 };
+			shared_ptr<TileType> tileType = make_shared<TileType>(1, 16, 16, v, gRenderer, false);
 			tileType->setRenderStrategy(make_shared<CGALinearDecodeStrategy>());
 
-			auto tile = make_shared<Tile>(indexX, indexY, tileType);
+			auto horizontalAnimationStrategy = make_shared<VerticalScrollingTileAnimation>(16, 16);
+
+			auto tile = make_shared<Tile>(indexX, indexY, tileType, horizontalAnimationStrategy);
 			tiles.push_back(tile);
 
 			indexX += 16;

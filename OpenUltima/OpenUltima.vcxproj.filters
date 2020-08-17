@@ -24,13 +24,22 @@
     <ClCompile Include="src\overworld\TileType.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\LTimer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\EGARowPlanarDecodeStrategy.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\CGALinearDecodeStrategy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\VerticalScrollingTileAnimation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\HorizontalSwapTileAnimation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\common\LTexture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\common\LTimer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -41,9 +50,6 @@
     <ClInclude Include="src\overworld\TileType.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\LTimer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\PixelDecodeStrategy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -51,6 +57,21 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\CGALinearDecodeStrategy.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\TileAnimationStrategy.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\VerticalScrollingTileAnimation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\HorizontalSwapTileAnimation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\LTexture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\LTimer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
