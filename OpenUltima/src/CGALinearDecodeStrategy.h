@@ -10,6 +10,8 @@ namespace OpenUltima {
 		vector<uint32_t> GetPixels(vector<uint8_t> bytes) override;
 	private:
 		uint32_t GetPixel(int colorData);
+
+		virtual const int getBytesPerTile() override;
 	};
 }
 

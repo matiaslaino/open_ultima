@@ -21,19 +21,10 @@
     <ClCompile Include="src\overworld\Tile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\overworld\TileType.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\EGARowPlanarDecodeStrategy.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\CGALinearDecodeStrategy.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\VerticalScrollingTileAnimation.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\HorizontalSwapTileAnimation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\common\LTexture.cpp">
@@ -42,12 +33,18 @@
     <ClCompile Include="src\common\LTimer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\TileTypeLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PixelDecodeStrategy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\overworld\OverworldSprite.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\overworld\Tile.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\overworld\TileType.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\PixelDecodeStrategy.h">
@@ -59,19 +56,22 @@
     <ClInclude Include="src\CGALinearDecodeStrategy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\TileAnimationStrategy.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\VerticalScrollingTileAnimation.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\HorizontalSwapTileAnimation.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\common\LTexture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\common\LTimer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\TileTypeLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\overworld\Constants.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\overworld\OverworldSprite.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\SDLDeleter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

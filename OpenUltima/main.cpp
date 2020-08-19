@@ -8,7 +8,6 @@ and may not be redistributed without written permission.*/
 #include <stdio.h>
 #include <string>
 #include <cmath>
-#include "src/overworld/TileType.h"
 #include "src/overworld/Tile.h"
 #include "src/CGALinearDecodeStrategy.h"
 #include "src/EGARowPlanarDecodeStrategy.h"
@@ -17,7 +16,7 @@ and may not be redistributed without written permission.*/
 #include <iostream>
 #include <fstream>
 #include "src/common/LTimer.h"
-#include "src/HorizontalSwapTileAnimation.h"
+#include "src/TileTypeLoader.h"
 
 using namespace std;
 using namespace OpenUltima;
@@ -206,63 +205,40 @@ int main(int argc, char* args[])
 			//Event handler
 			SDL_Event e;
 
-			SDL_RWops* file = SDL_RWFromFile("F:\\GOGLibrary\\Ultima 1\\CGATILES.BIN", "r+b");
-			constexpr int bytesPerTile = 64;
-			uint8_t gData[bytesPerTile * 2];
+			auto loader = make_unique<TileTypeLoader>();
+			
+			auto cgaTypes = loader->loadOverworldSprites("F:\\GOGLibrary\\Ultima 1\\CGATILES.BIN", make_unique< CGALinearDecodeStrategy>().get(), gRenderer);
+			auto egaTypes = loader->loadOverworldSprites("F:\\GOGLibrary\\Ultima 1\\EGATILES.BIN", make_unique< EGARowPlanarDecodeStrategy>().get(), gRenderer);
+			
 			std::vector<shared_ptr<OpenUltima::Tile>> tiles = {};
 			auto indexY = 0;
 			auto indexX = 0;
-			SDL_RWseek(file, bytesPerTile * 0, RW_SEEK_SET);
-			//for (int i = 0; i < 52; i++)
-			//{
-			SDL_RWread(file, &gData[0], 1, bytesPerTile);
-			vector<uint8_t> bytes1(begin(gData), end(gData));
-			//SDL_RWread(file, &gData[0], 1, bytesPerTile);
-			//vector<uint8_t> bytes2(begin(gData), end(gData));
-			vector<vector<uint8_t>> v = { bytes1, bytes1 };
-			shared_ptr<TileType> tileType = make_shared<TileType>(1, 16, 16, v, gRenderer, false);
-			tileType->setRenderStrategy(make_shared<CGALinearDecodeStrategy>());
 
-			auto horizontalAnimationStrategy = make_shared<VerticalScrollingTileAnimation>(16, 16);
-
-			auto tile = make_shared<Tile>(indexX, indexY, tileType, horizontalAnimationStrategy);
-			tiles.push_back(tile);
-
-			indexX += 16;
-			if (indexX > 200) {
-				indexX = 0;
-				indexY += 16;
-			}
-			//}
-
-			indexY += 16;
-			SDL_RWclose(file);
-
-
-			file = SDL_RWFromFile("F:\\GOGLibrary\\Ultima 1\\EGATILES.BIN", "r+b");
-			constexpr int egaBytesPerTile = 128;
-			uint8_t egaDataBuffer[egaBytesPerTile];
-			indexX = 0;
-			vector<Tile> egaTiles = {};
-			/*for (int i = 0; i < 52; i++)
-			{
-				SDL_RWread(file, &egaDataBuffer[0], 1, egaBytesPerTile);
-				vector<uint8_t> bytes(begin(egaDataBuffer), end(egaDataBuffer));
-				auto tileType = make_shared<TileType>(i, 16, 16, bytes, gRenderer);
-				tileType->setRenderStrategy(make_shared<EGARowPlanarRenderStrategy>());
-
-				auto tile = OpenUltima::Tile(indexX, indexY, tileType);
-				egaTiles.push_back(tile);
+			for (auto tileType : cgaTypes) {
+				auto tile = make_shared<Tile>(indexX, indexY, tileType);
+				tiles.push_back(tile);
 
 				indexX += 16;
 				if (indexX > 200) {
 					indexX = 0;
 					indexY += 16;
 				}
-			}*/
+			}
 
-			SDL_RWclose(file);
+			indexY += 16;
+			indexX = 0;
 
+			for (auto tileType : egaTypes) {
+				auto tile = make_shared<Tile>(indexX, indexY, tileType);
+				tiles.push_back(tile);
+
+				indexX += 16;
+				if (indexX > 200) {
+					indexX = 0;
+					indexY += 16;
+				}
+			}
+			
 			SDL_RenderSetLogicalSize(gRenderer, 320, 200);
 
 			SDL_Rect camera = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
@@ -299,7 +275,7 @@ int main(int argc, char* args[])
 
 				for (auto tile : tiles)
 				{
-					tile->Update(timeStep);
+					tile->update(timeStep);
 				}
 
 				//Restart step timer
@@ -311,13 +287,9 @@ int main(int argc, char* args[])
 
 				for (auto tile : tiles)
 				{
-					tile->Draw(gRenderer, camera);
+					tile->draw(gRenderer, camera);
 				}
-				for (auto tile : egaTiles)
-				{
-					tile.Draw(gRenderer, camera);
-				}
-
+				
 				//Update screen
 				SDL_RenderPresent(gRenderer);
 			}

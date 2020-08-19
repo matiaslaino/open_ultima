@@ -28,6 +28,11 @@ uint32_t CGALinearDecodeStrategy::GetPixel(int colorData) {
 	return 0x00000000;
 }
 
+const int OpenUltima::CGALinearDecodeStrategy::getBytesPerTile()
+{
+	return 64;
+}
+
 vector<uint32_t> OpenUltima::CGALinearDecodeStrategy::GetPixels(vector<uint8_t> bytes)
 {
 	// In CGA Linear, each byte represents 4 pixel, meaning 2 bits specify the color of a single pixel.

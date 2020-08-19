@@ -12,5 +12,7 @@ namespace OpenUltima {
 		static constexpr int PLANES_COUNT = 4;
 
 		uint32_t GetPixel(int colorData);
+
+		virtual const int getBytesPerTile() override;
 	};
 };

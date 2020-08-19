@@ -8,6 +8,14 @@ LTexture::LTexture()
 	mHeight = 0;
 }
 
+LTexture::LTexture(SDL_Texture* texture, int width, int height)
+{
+	//Initialize
+	mTexture = texture;
+	mWidth = width;
+	mHeight = height;
+}
+
 LTexture::~LTexture()
 {
 	//Deallocate
@@ -56,13 +64,6 @@ bool LTexture::loadFromFile(std::string path)
 	//return mTexture != NULL;
 }
 
-bool LTexture::initEmpty(SDL_Renderer* renderer, int textureWidth, int textureHeight) {
-	mTexture = SDL_CreateTexture(renderer,
-		SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STATIC, textureWidth, textureHeight);
-
-	return mTexture != nullptr;
-}
-
 void LTexture::free()
 {
 	//Free texture if it exists
@@ -99,4 +100,9 @@ int LTexture::getWidth()
 int LTexture::getHeight()
 {
 	return mHeight;
+}
+
+SDL_Texture* LTexture::getRawTexture()
+{
+	return mTexture;
 }

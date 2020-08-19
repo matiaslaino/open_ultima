@@ -71,6 +71,11 @@ uint32_t EGARowPlanarDecodeStrategy::GetPixel(int colorData) {
 	}
 }
 
+const int OpenUltima::EGARowPlanarDecodeStrategy::getBytesPerTile()
+{
+	return 128;
+}
+
 vector<uint32_t> OpenUltima::EGARowPlanarDecodeStrategy::GetPixels(vector<uint8_t> bytes)
 {
 	vector<uint32_t> pixels;
