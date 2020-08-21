@@ -1,12 +1,13 @@
 #include <cstddef>
 #include <memory>
+#include <vector>
 
 #include "Tile.h"
 
 using namespace std;
 using namespace OpenUltima;
 
-Tile::Tile(int x, int y, shared_ptr<OverworldSprite> sprite)
+Tile::Tile(int x, int y, shared_ptr<OverworldSpriteType> sprite)
 	: _sprite(sprite)
 {
 	_box.x = x;
@@ -18,58 +19,20 @@ Tile::Tile(int x, int y, shared_ptr<OverworldSprite> sprite)
 
 void Tile::draw(SDL_Renderer* renderer, SDL_Rect camera) {
 	if (isVisible(camera)) {
+		auto animation = _sprite->getAnimationType();
 
-		switch (_sprite->getAnimationType()) {
-		case OverworldSprite::AnimationType::NOP:
-		{
-			SDL_Rect renderQuadNop = { _box.x - camera.x, _box.y - camera.y, _box.w, _box.h };
-			SDL_RenderCopyEx(renderer, _sprite->getTexture().get()->getRawTexture(), &_sprite->getSource(), &renderQuadNop, 0, NULL, SDL_FLIP_NONE);
-		}
-		break;
-		case OverworldSprite::AnimationType::SCROLLING: 
-		{
-			// TODO check copy of rect
-			int scrollOffset = (int)_scroll;
+		auto renderQuads = _sprite->getTileAnimation()->getRenderQuads(renderer, _sprite->getAnimationType(), _box, _sprite->getSource(), _sprite->swapOffset());
 
-			SDL_Rect upperPortionSource = { _sprite->getSource().x, 0, 16, scrollOffset };
-			SDL_Rect lowerPortionSource = { _sprite->getSource().x, scrollOffset, 16, _box.h - scrollOffset };
-			SDL_Rect upperRenderQuad = { _box.x - camera.x, _box.y - camera.y, _box.w, _box.h - scrollOffset };
-			SDL_Rect lowerRenderQuad = { _box.x - camera.x, _box.y - camera.y + _box.h - scrollOffset, _box.w, scrollOffset };
-
-			SDL_RenderCopyEx(renderer, _sprite->getTexture().get()->getRawTexture(), &lowerPortionSource, &upperRenderQuad, 0, NULL, SDL_FLIP_NONE);
-			SDL_RenderCopyEx(renderer, _sprite->getTexture().get()->getRawTexture(), &upperPortionSource, &lowerRenderQuad, 0, NULL, SDL_FLIP_NONE);
-		}
-													  break;
-		case OverworldSprite::AnimationType::SWAP:
-		{
-			int textureOffset = _swapped ? _sprite->swapOffset() : _sprite->getSource().x;
-			SDL_Rect source = { textureOffset, 0, 16, 16 };
-			SDL_Rect renderQuad = { _box.x - camera.x, _box.y - camera.y, _box.w, _box.h };
-			SDL_RenderCopyEx(renderer, _sprite->getTexture().get()->getRawTexture(), &source, &renderQuad, 0, NULL, SDL_FLIP_NONE);
-		}
-		break;
+		for (auto renderQuad : renderQuads) {
+			SDL_Rect adjustedRenderTargetQuad = { renderQuad.target.x - camera.x, renderQuad.target.y - camera.y, renderQuad.target.w, renderQuad.target.h };
+			SDL_RenderCopyEx(renderer, _sprite->getTexture().get()->getRawTexture(), &renderQuad.source, &adjustedRenderTargetQuad, 0, NULL, SDL_FLIP_NONE);
 		}
 	}
 }
 
 void OpenUltima::Tile::update(float elapsed)
 {
-	switch (_sprite->getAnimationType()) {
-	case OverworldSprite::AnimationType::NOP:
-		break;
-	case OverworldSprite::AnimationType::SCROLLING:
-		_scroll += (_box.h / 2) * elapsed;
-		if (_scroll >= _box.h) _scroll = 0;
-		break;
-	case OverworldSprite::AnimationType::SWAP:
-		_swapCounter += elapsed;
-
-		if (_swapCounter >= 3) {
-			_swapCounter = 0;
-			_swapped = !_swapped;
-		}
-		break;
-	}
+	_sprite->getTileAnimation()->update(elapsed, _sprite->getAnimationType(), _box);
 }
 
 bool Tile::isVisible(SDL_Rect camera)

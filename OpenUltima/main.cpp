@@ -17,6 +17,7 @@ and may not be redistributed without written permission.*/
 #include <fstream>
 #include "src/common/LTimer.h"
 #include "src/TileTypeLoader.h"
+#include "src/overworld/Overworld.h"
 
 using namespace std;
 using namespace OpenUltima;
@@ -57,7 +58,7 @@ bool init()
 	else
 	{
 		//Set texture filtering to linear
-		if (!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1"))
+		if (!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, 0))
 		{
 			printf("Warning: Linear texture filtering not enabled!");
 		}
@@ -71,12 +72,6 @@ bool init()
 		}
 		else
 		{
-			//Set texture filtering to linear
-			if (!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1"))
-			{
-				printf("Warning: Linear texture filtering not enabled!");
-			}
-
 			//Create renderer for window
 			gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 			if (gRenderer == NULL)
@@ -239,6 +234,10 @@ int main(int argc, char* args[])
 				}
 			}
 			
+			auto player = make_shared<Player>(20, 20);
+			auto overworld = make_unique<Overworld>(player, 19, 9);
+			overworld->init(gRenderer);
+
 			SDL_RenderSetLogicalSize(gRenderer, 320, 200);
 
 			SDL_Rect camera = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
@@ -257,26 +256,13 @@ int main(int argc, char* args[])
 					{
 						quit = true;
 					}
-					else if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
-					{
-						//Adjust the velocity
-						switch (e.key.keysym.sym)
-						{
-						case SDLK_UP: camera.y += 10; break;
-						case SDLK_DOWN: camera.y -= 10; break;
-						case SDLK_LEFT: camera.x += 10; break;
-						case SDLK_RIGHT: camera.x -= 10; break;
-						}
+					else {
+						overworld->handle(e);
 					}
 				}
 
 				//Calculate time step
 				float timeStep = stepTimer.getTicks() / 1000.f;
-
-				for (auto tile : tiles)
-				{
-					tile->update(timeStep);
-				}
 
 				//Restart step timer
 				stepTimer.start();
@@ -285,11 +271,8 @@ int main(int argc, char* args[])
 				SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 				SDL_RenderClear(gRenderer);
 
-				for (auto tile : tiles)
-				{
-					tile->draw(gRenderer, camera);
-				}
-				
+				overworld->update(timeStep);
+				overworld->draw(gRenderer);
 				//Update screen
 				SDL_RenderPresent(gRenderer);
 			}
