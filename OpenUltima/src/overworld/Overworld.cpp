@@ -1,39 +1,22 @@
 #include "Overworld.h"
 #include "../TileTypeLoader.h"
-#include "../EGARowPlanarDecodeStrategy.h"
+#include "../PixelDecodeStrategy.h"
 #include <map>
 #include "Constants.h"
+#include "TileAnimation.h"
 
 using namespace std;
 
 void Overworld::update(float elapsed)
 {
-	int tileStartOffset = (_camera.y / TILE_WIDTH) * 168 + _camera.x / TILE_WIDTH;
-	int offset = tileStartOffset;
-
-	for (int y = 0; y < 9; y++) {
-		for (int x = 0; x < 20; x++) {
-			int tileOffset = (offset + x) % 26176;
-			auto tile = _tiles[tileOffset];
-			tile->update(elapsed);
-		}
-		offset += 168;
-	}
+	executeOnVisibleTiles([elapsed](Tile* tile) -> void { tile->update(elapsed); });
 }
 
 void Overworld::draw(SDL_Renderer* renderer)
 {
-	int tileStartOffset = (_camera.y / TILE_WIDTH) * 168 + _camera.x / TILE_WIDTH;
-	int offset = tileStartOffset;
-
-	for (int y = 0; y < 9; y++) {
-		for (int x = 0; x < 20; x++) {
-			int tileOffset = (offset + x) % 26176;
-			auto tile = _tiles[tileOffset];
-			tile->draw(renderer, _camera);
-		}
-		offset += 168;
-	}
+	// why do i need to declare a variable for a capture? fuck!
+	auto camera = _camera;
+	executeOnVisibleTiles([renderer, camera](Tile* tile) -> void { tile->draw(renderer, camera); });
 }
 
 void Overworld::handle(const SDL_Event& event)
@@ -46,20 +29,30 @@ void Overworld::handle(const SDL_Event& event)
 
 		switch (pressedKey)
 		{
-		case SDLK_UP: _player->setOverworldY(--playerY); break;
-		case SDLK_DOWN: _player->setOverworldY(++playerY); break;
-		case SDLK_LEFT: _player->setOverworldX(--playerX); break;
-		case SDLK_RIGHT: _player->setOverworldX(++playerX); break;
+		case SDLK_UP: playerY--; break;
+		case SDLK_DOWN: playerY++; break;
+		case SDLK_LEFT: playerX--; break;
+		case SDLK_RIGHT: playerX++; break;
 		}
+
+		if (playerX < 0) playerX = 0;
+		if (playerX > BOUND_X) playerX = BOUND_X;
+		if (playerY < 0) playerY = 0;
+		if (playerY > BOUND_Y) playerY = BOUND_Y;
+
+		_player->setOverworldX(playerX);
+		_player->setOverworldY(playerY);
 
 		setCamera();
 	}
 }
 
-void Overworld::init(SDL_Renderer* renderer)
+void Overworld::init(SDL_Renderer* renderer, PixelDecodeStrategy* pixelDecodeStrategy, string tilesFsPath)
 {
+	_tiles.clear();
+
 	auto spriteLoader = make_unique<TileTypeLoader>();
-	auto spriteTypes = spriteLoader->loadOverworldSprites("F:\\GOGLibrary\\Ultima 1\\EGATILES.BIN", make_unique< EGARowPlanarDecodeStrategy>().get(), renderer);
+	auto spriteTypes = spriteLoader->loadOverworldSprites(tilesFsPath, pixelDecodeStrategy, renderer);
 	map<OverworldSpriteType::SpriteType, shared_ptr<OverworldSpriteType>> spritesMap;
 	for (auto spriteType : spriteTypes) {
 		spritesMap.insert(pair<OverworldSpriteType::SpriteType, shared_ptr<OverworldSpriteType>>(spriteType->getType(), spriteType));
@@ -67,7 +60,7 @@ void Overworld::init(SDL_Renderer* renderer)
 
 	string mapFileLocation = "F:\\GOGLibrary\\Ultima 1\\MAP.BIN";
 	SDL_RWops* file = SDL_RWFromFile(mapFileLocation.c_str(), "r+b");
-	int mapSizeBytes = 13088;
+	int mapSizeBytes = 13103;
 	uint8_t* buffer = new uint8_t[mapSizeBytes];
 
 	SDL_RWread(file, buffer, 1, mapSizeBytes);
@@ -75,10 +68,10 @@ void Overworld::init(SDL_Renderer* renderer)
 
 	auto currentX = -1;
 	auto currentY = 0;
-	
+
 	// All water and static tiles share the same animation (water needs to scroll at the same time, and NOP tiles don't do anything)
 	auto defaultSharedAnimation = make_shared<TileAnimation>();
-	
+
 	for (int i = 0; i < mapSizeBytes; i++) {
 		auto byte = buffer[i];
 		auto idTileNibble1 = byte >> 4;
@@ -114,23 +107,40 @@ void Overworld::init(SDL_Renderer* renderer)
 	delete[] buffer;
 }
 
-vector<Tile> Overworld::getMap(int x, int y, int widthTiles, int heightTiles)
-{
-	return vector<Tile>();
-}
-
 void Overworld::setCamera()
 {
-	_camera.x = (_player->getOverworldX() - (int)((_widthTiles - 1) / 2)) * TILE_WIDTH;
-	_camera.y = (_player->getOverworldY() - (int)((_heightTiles - 1) / 2)) * TILE_WIDTH;
+	_camera.x = toPixels(_player->getOverworldX() - (_widthTiles - 1) / 2);
+	_camera.y = toPixels(_player->getOverworldY() - (_heightTiles - 1) / 2);
 
-	auto cameraBoundX = (BOUND_X + (_widthTiles - 1) / 2) * 16;
-	auto cameraBoundY = (BOUND_Y + (_heightTiles - 1) / 2) * 16;
+	int cameraBoundX = toPixels(BOUND_X);
+	int cameraBoundY = toPixels(BOUND_Y);
 
 	if (_camera.x < 0) _camera.x = 0;
 	if (_camera.y < 0) _camera.y = 0;
-	if (_camera.x > cameraBoundX) _camera.x = cameraBoundX;
-	if (_camera.y > cameraBoundY) _camera.y = cameraBoundY;
+	if (_camera.x + toPixels(_widthTiles) > cameraBoundX) _camera.x = cameraBoundX - toPixels(_widthTiles);
+	if (_camera.y + toPixels(_heightTiles) > cameraBoundY) _camera.y = cameraBoundY - toPixels(_heightTiles);
+}
+
+int Overworld::toPixels(int overworldCoordinate)
+{
+	return overworldCoordinate * TILE_WIDTH;
+}
+
+void Overworld::executeOnVisibleTiles(function<void(Tile*)> func)
+{
+	int tileStartOffset = (_camera.y / TILE_WIDTH) * 168 + _camera.x / TILE_WIDTH;
+	int offset = tileStartOffset;
+
+	for (int y = 0; y < 9; y++) {
+		for (int x = 0; x < 20; x++) {
+			int tileOffset = (offset + x);
+			if (tileOffset >= _tiles.size()) continue;
+
+			auto tile = _tiles[tileOffset];
+			func(tile.get());
+		}
+		offset += 168;
+	}
 }
 
 OverworldSpriteType::SpriteType Overworld::getSpriteType(int tileTypeId) {

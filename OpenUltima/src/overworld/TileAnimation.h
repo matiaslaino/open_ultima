@@ -17,11 +17,13 @@ public:
 		SDL_Rect target;
 	};
 
+	static void updateScrolling(float elapsed);
+
 	void update(float elapsed, AnimationType animationType, SDL_Rect box);
 	vector<TileAnimation::RenderQuad> getRenderQuads(SDL_Renderer* renderer, AnimationType animationType, SDL_Rect spriteBox, SDL_Rect textureSpriteSource, int swapOffset);
 
 private:
-	float _scroll = 0;
+	static double _scroll;
 	float _swapCounter = 0;
 	bool _swapped = false;
 };

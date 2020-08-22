@@ -202,7 +202,12 @@ int main(int argc, char* args[])
 
 			auto player = make_shared<Player>(20, 20);
 			auto overworld = make_unique<Overworld>(player, 19, 9);
-			overworld->init(gRenderer);
+
+			auto egaTilesPath = "F:\\GOGLibrary\\Ultima 1\\EGATILES.BIN";
+			auto cgaTilesPath = "F:\\GOGLibrary\\Ultima 1\\CGATILES.BIN";
+			auto usingEga = true;
+
+			overworld->init(gRenderer, make_unique<EGARowPlanarDecodeStrategy>().get(), egaTilesPath);
 
 			SDL_RenderSetLogicalSize(gRenderer, 320, 200);
 
@@ -223,12 +228,26 @@ int main(int argc, char* args[])
 						quit = true;
 					}
 					else {
+						if (e.type == SDL_KEYDOWN)
+						{
+							auto pressedKey = e.key.keysym.sym;
+							if (pressedKey == SDLK_PAGEDOWN) {
+								usingEga = !usingEga;
+								if (usingEga) {
+									overworld->init(gRenderer, make_unique<EGARowPlanarDecodeStrategy>().get(), egaTilesPath);
+								}
+								else {
+									overworld->init(gRenderer, make_unique<CGALinearDecodeStrategy>().get(), cgaTilesPath);
+								}
+							}
+						}
+
 						overworld->handle(e);
 					}
 				}
 
 				//Calculate time step
-				float timeStep = stepTimer.getTicks() / 1000.f;
+				float timeStep = stepTimer.getTicks();
 
 				//Restart step timer
 				stepTimer.start();
