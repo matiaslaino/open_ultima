@@ -9,6 +9,9 @@ using namespace std;
 
 void Overworld::update(float elapsed)
 {
+	// scrolling animation (water) needs to be animated on its own.
+	TileAnimation::updateScrolling(elapsed);
+
 	executeOnVisibleTiles([elapsed](Tile* tile) -> void { tile->update(elapsed); });
 }
 
@@ -16,6 +19,8 @@ void Overworld::draw(SDL_Renderer* renderer)
 {
 	// why do i need to declare a variable for a capture? fuck!
 	auto camera = _camera;
+
+	// this is a lambda expression, and i thought java was verbose!
 	executeOnVisibleTiles([renderer, camera](Tile* tile) -> void { tile->draw(renderer, camera); });
 }
 
@@ -35,14 +40,16 @@ void Overworld::handle(const SDL_Event& event)
 		case SDLK_RIGHT: playerX++; break;
 		}
 
+		// don't allow the player to move outside of overworld bounds (should this game allow world map wrapping?)
 		if (playerX < 0) playerX = 0;
-		if (playerX > BOUND_X) playerX = BOUND_X;
+		if (playerX > BOUND_X_TILES) playerX = BOUND_X_TILES;
 		if (playerY < 0) playerY = 0;
-		if (playerY > BOUND_Y) playerY = BOUND_Y;
+		if (playerY > BOUND_Y_TILES) playerY = BOUND_Y_TILES;
 
 		_player->setOverworldX(playerX);
 		_player->setOverworldY(playerY);
 
+		// re-center camera on player if possible
 		setCamera();
 	}
 }
@@ -51,19 +58,22 @@ void Overworld::init(SDL_Renderer* renderer, PixelDecodeStrategy* pixelDecodeStr
 {
 	_tiles.clear();
 
+	// load all sprite types.
 	auto spriteLoader = make_unique<TileTypeLoader>();
 	auto spriteTypes = spriteLoader->loadOverworldSprites(tilesFsPath, pixelDecodeStrategy, renderer);
+	
+	// write to map so it's easier to find the sprite type by type name.
 	map<OverworldSpriteType::SpriteType, shared_ptr<OverworldSpriteType>> spritesMap;
 	for (auto spriteType : spriteTypes) {
 		spritesMap.insert(pair<OverworldSpriteType::SpriteType, shared_ptr<OverworldSpriteType>>(spriteType->getType(), spriteType));
 	}
 
+	// TODO: get this from parameter.
 	string mapFileLocation = "F:\\GOGLibrary\\Ultima 1\\MAP.BIN";
+	
 	SDL_RWops* file = SDL_RWFromFile(mapFileLocation.c_str(), "r+b");
-	int mapSizeBytes = 13103;
-	uint8_t* buffer = new uint8_t[mapSizeBytes];
-
-	SDL_RWread(file, buffer, 1, mapSizeBytes);
+	uint8_t* buffer = new uint8_t[MAP_FILE_SIZE];
+	SDL_RWread(file, buffer, 1, MAP_FILE_SIZE);
 	SDL_RWclose(file);
 
 	auto currentX = -1;
@@ -72,7 +82,8 @@ void Overworld::init(SDL_Renderer* renderer, PixelDecodeStrategy* pixelDecodeStr
 	// All water and static tiles share the same animation (water needs to scroll at the same time, and NOP tiles don't do anything)
 	auto defaultSharedAnimation = make_shared<TileAnimation>();
 
-	for (int i = 0; i < mapSizeBytes; i++) {
+	// map file format is one byte contains the data of two tiles, one per nibble, so shift and mask them.
+	for (int i = 0; i < MAP_FILE_SIZE; i++) {
 		auto byte = buffer[i];
 		auto idTileNibble1 = byte >> 4;
 		auto idTileNibble2 = byte & 0b00001111;
@@ -80,27 +91,30 @@ void Overworld::init(SDL_Renderer* renderer, PixelDecodeStrategy* pixelDecodeStr
 		auto spriteType2 = getSpriteType(idTileNibble2);
 		auto sprite1 = spritesMap.find(spriteType1)->second;
 		auto sprite2 = spritesMap.find(spriteType2)->second;
+		
 		currentX++;
-		if (currentX == 168) {
+		if (currentX > BOUND_X_TILES) {
 			currentX = 0;
 			currentY++;
 		}
-
 		auto x1 = currentX;
 		auto y1 = currentY;
-		if (currentX++ == 168) {
+		
+		currentX++;
+		if (currentX > BOUND_X_TILES) {
 			currentX = 0;
 			currentY++;
 		}
 		auto x2 = currentX;
 		auto y2 = currentY;
 
+		// water tiles share the same scrolling animation instance so they all animate at the same time
 		auto animation = sprite1->getAnimationType() == TileAnimation::AnimationType::SCROLLING ? defaultSharedAnimation : make_shared<TileAnimation>();
-		auto tile1 = make_shared<Tile>(x1 * 16, y1 * 16, sprite1, animation);
+		auto tile1 = make_shared<Tile>(toPixels(x1), toPixels(y1), sprite1, animation);
 		_tiles.push_back(tile1);
 
 		animation = sprite2->getAnimationType() == TileAnimation::AnimationType::SCROLLING ? defaultSharedAnimation : make_shared<TileAnimation>();
-		auto tile2 = make_shared<Tile>(x2 * 16, y2 * 16, sprite2, animation);
+		auto tile2 = make_shared<Tile>(toPixels(x2), toPixels(y2), sprite2, animation);
 		_tiles.push_back(tile2);
 	}
 
@@ -109,37 +123,43 @@ void Overworld::init(SDL_Renderer* renderer, PixelDecodeStrategy* pixelDecodeStr
 
 void Overworld::setCamera()
 {
-	_camera.x = toPixels(_player->getOverworldX() - (_widthTiles - 1) / 2);
-	_camera.y = toPixels(_player->getOverworldY() - (_heightTiles - 1) / 2);
+	_camera.x = toPixels(_player->getOverworldX() - (DISPLAY_SIZE_TILES_WIDTH - 1) / 2);
+	_camera.y = toPixels(_player->getOverworldY() - (DISPLAY_SIZE_TILES_HEIGHT - 1) / 2);
 
-	int cameraBoundX = toPixels(BOUND_X);
-	int cameraBoundY = toPixels(BOUND_Y);
+	int cameraBoundX = toPixels(BOUND_X_TILES);
+	int cameraBoundY = toPixels(BOUND_Y_TILES);
 
+	// make sure the camera doesn't show where the world ends!
 	if (_camera.x < 0) _camera.x = 0;
 	if (_camera.y < 0) _camera.y = 0;
-	if (_camera.x + toPixels(_widthTiles) > cameraBoundX) _camera.x = cameraBoundX - toPixels(_widthTiles);
-	if (_camera.y + toPixels(_heightTiles) > cameraBoundY) _camera.y = cameraBoundY - toPixels(_heightTiles);
+	if (_camera.x + toPixels(DISPLAY_SIZE_TILES_WIDTH) > cameraBoundX) _camera.x = cameraBoundX - toPixels(DISPLAY_SIZE_TILES_WIDTH);
+	if (_camera.y + toPixels(DISPLAY_SIZE_TILES_HEIGHT) > cameraBoundY) _camera.y = cameraBoundY - toPixels(DISPLAY_SIZE_TILES_HEIGHT);
 }
 
-int Overworld::toPixels(int overworldCoordinate)
+int Overworld::toPixels(int tiles)
 {
-	return overworldCoordinate * TILE_WIDTH;
+	return tiles * TILE_WIDTH;
+}
+
+int Overworld::toTiles(int pixels)
+{
+	return pixels / TILE_WIDTH;
 }
 
 void Overworld::executeOnVisibleTiles(function<void(Tile*)> func)
 {
-	int tileStartOffset = (_camera.y / TILE_WIDTH) * 168 + _camera.x / TILE_WIDTH;
+	int tileStartOffset = toTiles(_camera.y) * TILES_PER_ROW + toTiles(_camera.x);
 	int offset = tileStartOffset;
 
-	for (int y = 0; y < 9; y++) {
-		for (int x = 0; x < 20; x++) {
+	for (int y = 0; y < DISPLAY_SIZE_TILES_HEIGHT; y++) {
+		for (int x = 0; x < DISPLAY_SIZE_TILES_WIDTH; x++) {
 			int tileOffset = (offset + x);
 			if (tileOffset >= _tiles.size()) continue;
 
 			auto tile = _tiles[tileOffset];
 			func(tile.get());
 		}
-		offset += 168;
+		offset += TILES_PER_ROW;
 	}
 }
 

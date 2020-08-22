@@ -13,10 +13,10 @@ using namespace OpenUltima;
 class Overworld
 {
 public:
-	Overworld(shared_ptr<Player> player, int widthTiles, int heightTiles) : _player(player), _widthTiles(widthTiles), _heightTiles(heightTiles) 
+	Overworld(shared_ptr<Player> player, int widthTiles, int heightTiles) : _player(player) 
 	{ 
-		_camera.w = 19 * TILE_WIDTH;
-		_camera.h = 9 * TILE_HEIGHT;
+		_camera.w = DISPLAY_SIZE_TILES_WIDTH * TILE_WIDTH;
+		_camera.h = DISPLAY_SIZE_TILES_HEIGHT * TILE_HEIGHT;
 	
 		setCamera();
 	};
@@ -27,19 +27,22 @@ public:
 	void init(SDL_Renderer* renderer, PixelDecodeStrategy* pixelDecodeStrategy, string tilesFsPath);
 
 private:
-	static constexpr int BOUND_X = 167;
-	static constexpr int BOUND_Y = 155;
+	static constexpr int BOUND_X_TILES = 167;
+	static constexpr int BOUND_Y_TILES = 155;
+	static constexpr int MAP_FILE_SIZE = 13103;
+	static constexpr int DISPLAY_SIZE_TILES_WIDTH = 19;
+	static constexpr int DISPLAY_SIZE_TILES_HEIGHT = 9;
+	static constexpr int TILES_PER_ROW = 168;
 
 	shared_ptr<Player> _player;
 	vector<shared_ptr<Tile>> _tiles;
 	SDL_Rect _camera;
-	int _widthTiles;
-	int _heightTiles;
-
+	
 	static OverworldSpriteType::SpriteType getSpriteType(int tileTypeId);
-
+	
 	void setCamera();
-	int toPixels(int overworldCoordinate);
+	int toPixels(int tiles);
+	int toTiles(int pixels);
 	void executeOnVisibleTiles(function<void(Tile*)>);
 };
 
