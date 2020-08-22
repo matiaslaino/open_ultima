@@ -64,7 +64,7 @@ bool init()
 		}
 
 		//Create window
-		gWindow = SDL_CreateWindow("Mystery game", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+		gWindow = SDL_CreateWindow("(Open)Ultima 1: The First Age of Darkness", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 		if (gWindow == NULL)
 		{
 			printf("Window could not be created! SDL Error: %s\n", SDL_GetError());
@@ -200,40 +200,6 @@ int main(int argc, char* args[])
 			//Event handler
 			SDL_Event e;
 
-			auto loader = make_unique<TileTypeLoader>();
-			
-			auto cgaTypes = loader->loadOverworldSprites("F:\\GOGLibrary\\Ultima 1\\CGATILES.BIN", make_unique< CGALinearDecodeStrategy>().get(), gRenderer);
-			auto egaTypes = loader->loadOverworldSprites("F:\\GOGLibrary\\Ultima 1\\EGATILES.BIN", make_unique< EGARowPlanarDecodeStrategy>().get(), gRenderer);
-			
-			std::vector<shared_ptr<OpenUltima::Tile>> tiles = {};
-			auto indexY = 0;
-			auto indexX = 0;
-
-			for (auto tileType : cgaTypes) {
-				auto tile = make_shared<Tile>(indexX, indexY, tileType);
-				tiles.push_back(tile);
-
-				indexX += 16;
-				if (indexX > 200) {
-					indexX = 0;
-					indexY += 16;
-				}
-			}
-
-			indexY += 16;
-			indexX = 0;
-
-			for (auto tileType : egaTypes) {
-				auto tile = make_shared<Tile>(indexX, indexY, tileType);
-				tiles.push_back(tile);
-
-				indexX += 16;
-				if (indexX > 200) {
-					indexX = 0;
-					indexY += 16;
-				}
-			}
-			
 			auto player = make_shared<Player>(20, 20);
 			auto overworld = make_unique<Overworld>(player, 19, 9);
 			overworld->init(gRenderer);

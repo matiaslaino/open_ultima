@@ -25,6 +25,9 @@ public:
 	void init(SDL_Renderer* renderer);
 
 private:
+	static constexpr int BOUND_X = 168;
+	static constexpr int BOUND_Y = 168;
+
 	shared_ptr<Player> _player;
 	vector<shared_ptr<Tile>> _tiles;
 	unique_ptr<LTexture> _texture;

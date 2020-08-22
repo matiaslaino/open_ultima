@@ -6,8 +6,6 @@ OverworldSpriteType::OverworldSpriteType(SpriteType type, shared_ptr<LTexture> o
 {
 	_source = { textureOffset, 0, 16, 16 };
 	_animationType = TileAnimation::AnimationType::SWAP;
-	_tileAnimation = make_shared<TileAnimation>();
-	;
 }
 
 OverworldSpriteType::OverworldSpriteType(SpriteType type, shared_ptr<LTexture> overworldTexture, int textureOffset, bool scroll)
@@ -15,7 +13,6 @@ OverworldSpriteType::OverworldSpriteType(SpriteType type, shared_ptr<LTexture> o
 {
 	_source = { textureOffset, 0, 16, 16 };
 	_animationType = scroll ? TileAnimation::AnimationType::SCROLLING : TileAnimation::AnimationType::NOP;
-	_tileAnimation = make_shared<TileAnimation>();
 }
 
 shared_ptr<LTexture> OverworldSpriteType::getTexture()
@@ -41,9 +38,4 @@ TileAnimation::AnimationType OverworldSpriteType::getAnimationType()
 OverworldSpriteType::SpriteType OverworldSpriteType::getType()
 {
 	return _type;
-}
-
-shared_ptr<TileAnimation> OverworldSpriteType::getTileAnimation()
-{
-	return _tileAnimation;
 }

@@ -8,12 +8,12 @@ using namespace std;
 
 void Overworld::update(float elapsed)
 {
-	int tileStartOffset = (_player->getOverworldY()) * 168 + _player->getOverworldX();
+	int tileStartOffset = (_camera.y / TILE_WIDTH) * 168 + _camera.x / TILE_WIDTH;
 	int offset = tileStartOffset;
 
 	for (int y = 0; y < 9; y++) {
 		for (int x = 0; x < 20; x++) {
-			int tileOffset = offset + x;
+			int tileOffset = (offset + x) % 26176;
 			auto tile = _tiles[tileOffset];
 			tile->update(elapsed);
 		}
@@ -23,12 +23,12 @@ void Overworld::update(float elapsed)
 
 void Overworld::draw(SDL_Renderer* renderer)
 {
-	int tileStartOffset = (_player->getOverworldY()) * 168 + _player->getOverworldX();
+	int tileStartOffset = (_camera.y / TILE_WIDTH) * 168 + _camera.x / TILE_WIDTH;
 	int offset = tileStartOffset;
 
 	for (int y = 0; y < 9; y++) {
 		for (int x = 0; x < 20; x++) {
-			int tileOffset = offset + x;
+			int tileOffset = (offset + x) % 26176;
 			auto tile = _tiles[tileOffset];
 			tile->draw(renderer, _camera);
 		}
@@ -38,7 +38,7 @@ void Overworld::draw(SDL_Renderer* renderer)
 
 void Overworld::handle(const SDL_Event& event)
 {
-	if (event.type == SDL_KEYDOWN && event.key.repeat == 0)
+	if (event.type == SDL_KEYDOWN)
 	{
 		auto pressedKey = event.key.keysym.sym;
 		int playerX = _player->getOverworldX();
@@ -75,6 +75,10 @@ void Overworld::init(SDL_Renderer* renderer)
 
 	auto currentX = -1;
 	auto currentY = 0;
+	
+	// All water and static tiles share the same animation (water needs to scroll at the same time, and NOP tiles don't do anything)
+	auto defaultSharedAnimation = make_shared<TileAnimation>();
+	
 	for (int i = 0; i < mapSizeBytes; i++) {
 		auto byte = buffer[i];
 		auto idTileNibble1 = byte >> 4;
@@ -98,10 +102,12 @@ void Overworld::init(SDL_Renderer* renderer)
 		auto x2 = currentX;
 		auto y2 = currentY;
 
-		auto tile1 = make_shared<Tile>(x1 * 16, y1 * 16, sprite1);
-		auto tile2 = make_shared<Tile>(x2 * 16, y2 * 16, sprite2);
-
+		auto animation = sprite1->getAnimationType() == TileAnimation::AnimationType::SCROLLING ? defaultSharedAnimation : make_shared<TileAnimation>();
+		auto tile1 = make_shared<Tile>(x1 * 16, y1 * 16, sprite1, animation);
 		_tiles.push_back(tile1);
+
+		animation = sprite2->getAnimationType() == TileAnimation::AnimationType::SCROLLING ? defaultSharedAnimation : make_shared<TileAnimation>();
+		auto tile2 = make_shared<Tile>(x2 * 16, y2 * 16, sprite2, animation);
 		_tiles.push_back(tile2);
 	}
 
@@ -115,11 +121,16 @@ vector<Tile> Overworld::getMap(int x, int y, int widthTiles, int heightTiles)
 
 void Overworld::setCamera()
 {
-	_camera.x = _player->getOverworldX() * TILE_WIDTH - (int)(_widthTiles / 2);
-	_camera.y = _player->getOverworldY() * TILE_HEIGHT - (int)(_heightTiles / 2);
+	_camera.x = (_player->getOverworldX() - (int)((_widthTiles - 1) / 2)) * TILE_WIDTH;
+	_camera.y = (_player->getOverworldY() - (int)((_heightTiles - 1) / 2)) * TILE_WIDTH;
+
+	auto cameraBoundX = (BOUND_X + (_widthTiles - 1) / 2) * 16;
+	auto cameraBoundY = (BOUND_Y + (_heightTiles - 1) / 2) * 16;
 
 	if (_camera.x < 0) _camera.x = 0;
 	if (_camera.y < 0) _camera.y = 0;
+	if (_camera.x > cameraBoundX) _camera.x = cameraBoundX;
+	if (_camera.y > cameraBoundY) _camera.y = cameraBoundY;
 }
 
 OverworldSpriteType::SpriteType Overworld::getSpriteType(int tileTypeId) {

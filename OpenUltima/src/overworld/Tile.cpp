@@ -7,8 +7,8 @@
 using namespace std;
 using namespace OpenUltima;
 
-Tile::Tile(int x, int y, shared_ptr<OverworldSpriteType> sprite)
-	: _sprite(sprite)
+Tile::Tile(int x, int y, shared_ptr<OverworldSpriteType> sprite, shared_ptr<TileAnimation> tileAnimation)
+	: _sprite(sprite), _tileAnimation(tileAnimation)
 {
 	_box.x = x;
 	_box.y = y;
@@ -21,7 +21,7 @@ void Tile::draw(SDL_Renderer* renderer, SDL_Rect camera) {
 	if (isVisible(camera)) {
 		auto animation = _sprite->getAnimationType();
 
-		auto renderQuads = _sprite->getTileAnimation()->getRenderQuads(renderer, _sprite->getAnimationType(), _box, _sprite->getSource(), _sprite->swapOffset());
+		auto renderQuads = _tileAnimation->getRenderQuads(renderer, _sprite->getAnimationType(), _box, _sprite->getSource(), _sprite->swapOffset());
 
 		for (auto renderQuad : renderQuads) {
 			SDL_Rect adjustedRenderTargetQuad = { renderQuad.target.x - camera.x, renderQuad.target.y - camera.y, renderQuad.target.w, renderQuad.target.h };
@@ -32,7 +32,7 @@ void Tile::draw(SDL_Renderer* renderer, SDL_Rect camera) {
 
 void OpenUltima::Tile::update(float elapsed)
 {
-	_sprite->getTileAnimation()->update(elapsed, _sprite->getAnimationType(), _box);
+	_tileAnimation->update(elapsed, _sprite->getAnimationType(), _box);
 }
 
 bool Tile::isVisible(SDL_Rect camera)

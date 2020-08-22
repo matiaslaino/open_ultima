@@ -21,7 +21,6 @@ public:
 	SDL_Rect getSource();
 	int swapOffset();
 	SpriteType getType();
-	shared_ptr<TileAnimation> getTileAnimation();
 	TileAnimation::AnimationType getAnimationType();
 private:
 	shared_ptr<LTexture> _texture;
@@ -30,6 +29,5 @@ private:
 	TileAnimation::AnimationType _animationType;
 	int _swapOffset;
 	SpriteType _type;
-	shared_ptr<TileAnimation> _tileAnimation;
 };
 
