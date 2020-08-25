@@ -1,76 +1,28 @@
 #include "Overworld.h"
 #include "../TileTypeLoader.h"
 #include "../PixelDecodeStrategy.h"
-#include <map>
 #include "Constants.h"
 #include "TileAnimation.h"
-
-using namespace std;
-
-void Overworld::update(float elapsed)
-{
-	// scrolling animation (water) needs to be animated on its own.
-	TileAnimation::updateScrolling(elapsed);
-
-	executeOnVisibleTiles([elapsed](Tile* tile) -> void { tile->update(elapsed); });
-}
-
-void Overworld::draw(SDL_Renderer* renderer)
-{
-	// why do i need to declare a variable for a capture? fuck!
-	auto camera = _camera;
-
-	// this is a lambda expression, and i thought java was verbose!
-	executeOnVisibleTiles([renderer, camera](Tile* tile) -> void { tile->draw(renderer, camera); });
-}
-
-void Overworld::handle(const SDL_Event& event)
-{
-	if (event.type == SDL_KEYDOWN)
-	{
-		auto pressedKey = event.key.keysym.sym;
-		int playerX = _player->getOverworldX();
-		int playerY = _player->getOverworldY();
-
-		switch (pressedKey)
-		{
-		case SDLK_UP: playerY--; break;
-		case SDLK_DOWN: playerY++; break;
-		case SDLK_LEFT: playerX--; break;
-		case SDLK_RIGHT: playerX++; break;
-		}
-
-		// don't allow the player to move outside of overworld bounds (should this game allow world map wrapping?)
-		if (playerX < 0) playerX = 0;
-		if (playerX > BOUND_X_TILES) playerX = BOUND_X_TILES;
-		if (playerY < 0) playerY = 0;
-		if (playerY > BOUND_Y_TILES) playerY = BOUND_Y_TILES;
-
-		_player->setOverworldX(playerX);
-		_player->setOverworldY(playerY);
-
-		// re-center camera on player if possible
-		setCamera();
-	}
-}
+#include "../common/Fonts.h"
+#include "../CommandDisplay.h"
 
 void Overworld::init(SDL_Renderer* renderer, PixelDecodeStrategy* pixelDecodeStrategy, string tilesFsPath)
 {
 	_tiles.clear();
+	_spritesMap.clear();
 
 	// load all sprite types.
 	auto spriteLoader = make_unique<TileTypeLoader>();
 	auto spriteTypes = spriteLoader->loadOverworldSprites(tilesFsPath, pixelDecodeStrategy, renderer);
-	
+
 	// write to map so it's easier to find the sprite type by type name.
-	map<OverworldSpriteType::SpriteType, shared_ptr<OverworldSpriteType>> spritesMap;
 	for (auto spriteType : spriteTypes) {
-		spritesMap.insert(pair<OverworldSpriteType::SpriteType, shared_ptr<OverworldSpriteType>>(spriteType->getType(), spriteType));
+		_spritesMap.insert(pair<OverworldSpriteType::SpriteType, shared_ptr<OverworldSpriteType>>(spriteType->getType(), spriteType));
 	}
 
 	// TODO: get this from parameter.
 	string mapFileLocation = "F:\\GOGLibrary\\Ultima 1\\MAP.BIN";
-	
+
 	SDL_RWops* file = SDL_RWFromFile(mapFileLocation.c_str(), "r+b");
 	uint8_t* buffer = new uint8_t[MAP_FILE_SIZE];
 	SDL_RWread(file, buffer, 1, MAP_FILE_SIZE);
@@ -89,9 +41,9 @@ void Overworld::init(SDL_Renderer* renderer, PixelDecodeStrategy* pixelDecodeStr
 		auto idTileNibble2 = byte & 0b00001111;
 		auto spriteType1 = getSpriteType(idTileNibble1);
 		auto spriteType2 = getSpriteType(idTileNibble2);
-		auto sprite1 = spritesMap.find(spriteType1)->second;
-		auto sprite2 = spritesMap.find(spriteType2)->second;
-		
+		auto sprite1 = _spritesMap.find(spriteType1)->second;
+		auto sprite2 = _spritesMap.find(spriteType2)->second;
+
 		currentX++;
 		if (currentX > BOUND_X_TILES) {
 			currentX = 0;
@@ -99,7 +51,7 @@ void Overworld::init(SDL_Renderer* renderer, PixelDecodeStrategy* pixelDecodeStr
 		}
 		auto x1 = currentX;
 		auto y1 = currentY;
-		
+
 		currentX++;
 		if (currentX > BOUND_X_TILES) {
 			currentX = 0;
@@ -118,13 +70,89 @@ void Overworld::init(SDL_Renderer* renderer, PixelDecodeStrategy* pixelDecodeStr
 		_tiles.push_back(tile2);
 	}
 
+	_playerTile = make_shared<Tile>(toPixels(_gameContext->getPlayer()->getOverworldX()), toPixels(_gameContext->getPlayer()->getOverworldY()), _spritesMap.find(OverworldSpriteType::SpriteType::PLAYER)->second, defaultSharedAnimation);
+
 	delete[] buffer;
+}
+
+void Overworld::update(float elapsed)
+{
+	// scrolling animation (water) needs to be animated on its own.
+	TileAnimation::updateScrolling(elapsed);
+
+	executeOnVisibleTiles([elapsed](Tile* tile) -> void { tile->update(elapsed); });
+}
+
+void Overworld::draw(SDL_Renderer* renderer)
+{
+	// why do i need to declare a variable for a capture? fuck!
+	auto camera = _camera;
+
+	// this is a lambda expression, and i thought java was verbose!
+	executeOnVisibleTiles([renderer, camera](Tile* tile) -> void { tile->draw(renderer, camera); });
+
+	_playerTile->draw(renderer, camera);
+}
+
+void Overworld::move(int deltaX, int deltaY)
+{
+	int playerX = _gameContext->getPlayer()->getOverworldX() + deltaX;
+	int playerY = _gameContext->getPlayer()->getOverworldY() + deltaY;
+	
+	// don't allow the player to move outside of overworld bounds (should this game allow world map wrapping?)
+	if (playerX < 0) playerX = 0;
+	if (playerX > BOUND_X_TILES) playerX = BOUND_X_TILES;
+	if (playerY < 0) playerY = 0;
+	if (playerY > BOUND_Y_TILES) playerY = BOUND_Y_TILES;
+
+	if (playerX < _gameContext->getPlayer()->getOverworldX()) {
+		CommandDisplay::write("West", true);
+	}
+	else if (playerX > _gameContext->getPlayer()->getOverworldX()) {
+		CommandDisplay::write("East", true);
+	}
+	else if (playerY > _gameContext->getPlayer()->getOverworldY()) {
+		CommandDisplay::write("South", true);
+	}
+	else if (playerY < _gameContext->getPlayer()->getOverworldY()) {
+		CommandDisplay::write("North", true);
+	}
+
+	_gameContext->getPlayer()->setOverworldX(playerX);
+	_gameContext->getPlayer()->setOverworldY(playerY);
+
+	_playerTile->setCoordinates(toPixels(playerX), toPixels(playerY));
+
+	// re-center camera on player if possible
+	setCamera();
+}
+
+void Overworld::enterDungeon()
+{
+	_gameContext->enterDungeon();
+}
+
+void Overworld::handle(const SDL_Event& event)
+{
+	if (event.type == SDL_KEYDOWN)
+	{
+		auto pressedKey = event.key.keysym.sym;
+		
+		switch (pressedKey)
+		{
+		case SDLK_UP: move(0, -1); break;
+		case SDLK_DOWN: move(0, 1); break;
+		case SDLK_LEFT: move(-1, 0); break;
+		case SDLK_RIGHT: move(1, 0); break;
+		case SDLK_e: enterDungeon(); break;
+		}
+	}
 }
 
 void Overworld::setCamera()
 {
-	_camera.x = toPixels(_player->getOverworldX() - (DISPLAY_SIZE_TILES_WIDTH - 1) / 2);
-	_camera.y = toPixels(_player->getOverworldY() - (DISPLAY_SIZE_TILES_HEIGHT - 1) / 2);
+	_camera.x = toPixels(_gameContext->getPlayer()->getOverworldX() - (DISPLAY_SIZE_TILES_WIDTH - 1) / 2);
+	_camera.y = toPixels(_gameContext->getPlayer()->getOverworldY() - (DISPLAY_SIZE_TILES_HEIGHT - 1) / 2);
 
 	int cameraBoundX = toPixels(BOUND_X_TILES);
 	int cameraBoundY = toPixels(BOUND_Y_TILES);

@@ -13,6 +13,7 @@ namespace OpenUltima {
 		Tile(int x, int y, shared_ptr<OverworldSpriteType> sprite, shared_ptr<TileAnimation> tileAnimation);
 		void draw(SDL_Renderer* renderer, SDL_Rect camera);
 		void update(float elapsed);
+		void setCoordinates(int x, int y) { _box.x = x; _box.y = y; }
 
 		shared_ptr<TileAnimation> getTileAnimation() { return _tileAnimation; };
 	private:

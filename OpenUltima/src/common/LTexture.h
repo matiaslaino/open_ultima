@@ -1,6 +1,7 @@
 #pragma once
 #include <SDL.h>
 #include <string>
+#include <SDL_ttf.h>
 
 //Texture wrapper class
 class LTexture
@@ -16,6 +17,8 @@ public:
     //Loads image at specified path
     bool loadFromFile(std::string path);
 
+    bool loadFromRenderedText(TTF_Font* font, SDL_Renderer* renderer, std::string textureText, SDL_Color textColor);
+    bool loadFromColor(SDL_Renderer* renderer, int width, int height, int r, int g, int b, int a);
     //Deallocates texture
     void free();
 
@@ -28,7 +31,7 @@ public:
 
     SDL_Texture* getRawTexture();
 
-private:
+private:    
     //The actual hardware texture
     SDL_Texture* mTexture;
 

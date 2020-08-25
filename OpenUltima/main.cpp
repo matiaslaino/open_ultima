@@ -18,13 +18,18 @@ and may not be redistributed without written permission.*/
 #include "src/common/LTimer.h"
 #include "src/TileTypeLoader.h"
 #include "src/overworld/Overworld.h"
+#include "src/common/Fonts.h"
+#include "src/Constants.h"
+#include "src/CommandDisplay.h"
+#include "src/GameContext.h"
+#include "src/Dungeon.h"
 
 using namespace std;
 using namespace OpenUltima;
 
 //Screen dimension constants
 const int SCREEN_WIDTH = 640;
-const int SCREEN_HEIGHT = 480;
+const int SCREEN_HEIGHT = 400;
 
 //Starts up SDL and creates window
 bool init();
@@ -43,6 +48,9 @@ SDL_Window* gWindow = NULL;
 
 //The window renderer
 SDL_Renderer* gRenderer = NULL;
+
+shared_ptr<PlayerStatusDisplay> _playerStatusDisplay;
+shared_ptr<CommandDisplay> _commandDisplay;
 
 bool init()
 {
@@ -92,6 +100,13 @@ bool init()
 					success = false;
 				}
 			}
+		}
+
+		//Initialize SDL_ttf
+		if (TTF_Init() == -1)
+		{
+			printf("SDL_ttf could not initialize! SDL_ttf Error: %s\n", TTF_GetError());
+			success = false;
 		}
 	}
 
@@ -201,7 +216,9 @@ int main(int argc, char* args[])
 			SDL_Event e;
 
 			auto player = make_shared<Player>(20, 20);
-			auto overworld = make_unique<Overworld>(player, 19, 9);
+			auto gameContext = make_shared<GameContext>(player);
+			auto overworld = make_unique<Overworld>(gameContext, 19, 9);
+			auto dungeonScreen = make_unique<Dungeon>(gameContext);
 
 			auto egaTilesPath = "F:\\GOGLibrary\\Ultima 1\\EGATILES.BIN";
 			auto cgaTilesPath = "F:\\GOGLibrary\\Ultima 1\\CGATILES.BIN";
@@ -211,10 +228,13 @@ int main(int argc, char* args[])
 
 			SDL_RenderSetLogicalSize(gRenderer, 320, 200);
 
-			SDL_Rect camera = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
-
 			//Keeps track of time between steps
 			LTimer stepTimer;
+			Fonts::init(gRenderer);
+
+			_playerStatusDisplay = make_shared<PlayerStatusDisplay>(gRenderer, player);
+			_commandDisplay = make_shared<CommandDisplay>(gRenderer);
+			SDL_Rect commandDisplayBox = { CommandDisplay::POSITION_X, CommandDisplay::POSITION_Y, CommandDisplay::WIDTH, CommandDisplay::HEIGHT };
 
 			//While application is running
 			while (!quit)
@@ -253,11 +273,33 @@ int main(int argc, char* args[])
 				stepTimer.start();
 
 				//Clear screen
-				SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+				SDL_SetRenderDrawColor(gRenderer, 0, 0, 0xAF, 0);
 				SDL_RenderClear(gRenderer);
 
-				overworld->update(timeStep);
-				overworld->draw(gRenderer);
+				if (gameContext->getCurrentScreen() == ScreenType::Overworld) {
+					overworld->update(timeStep);
+				
+					int mapViewPadding = (GAME_VIEW_WIDTH - Overworld::MAP_WIDTH_PX) / 2;
+					SDL_Rect mapViewport = { mapViewPadding, mapViewPadding, Overworld::MAP_WIDTH_PX, Overworld::MAP_HEIGHT_PX };
+					SDL_RenderSetViewport(gRenderer, &mapViewport);
+
+					overworld->draw(gRenderer);
+				}
+				else {
+					dungeonScreen->update(timeStep);
+					SDL_Rect viewPort = { 8, 8, Overworld::MAP_WIDTH_PX, Overworld::MAP_HEIGHT_PX };
+					SDL_RenderSetViewport(gRenderer, &viewPort);
+
+					dungeonScreen->draw(gRenderer);
+				}
+
+				SDL_Rect viewport = { PlayerStatusDisplay::POSITION_X, PlayerStatusDisplay::POSITION_Y, PlayerStatusDisplay::WIDTH, PlayerStatusDisplay::HEIGHT };
+				SDL_RenderSetViewport(gRenderer, &viewport);
+				_playerStatusDisplay->draw(gRenderer);
+
+				SDL_RenderSetViewport(gRenderer, &commandDisplayBox);
+				_commandDisplay->draw(gRenderer);
+
 				//Update screen
 				SDL_RenderPresent(gRenderer);
 			}

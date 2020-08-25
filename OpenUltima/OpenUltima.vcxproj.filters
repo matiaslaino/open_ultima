@@ -39,25 +39,37 @@
     <ClCompile Include="src\PixelDecodeStrategy.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\overworld\MapLoader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\overworld\Map.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\overworld\Overworld.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Player.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\AnimationHolder.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\overworld\TileAnimation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\overworld\OverworldSpriteType.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\common\Fonts.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PlayerStatusDisplay.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CommandDisplay.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Screen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ShapeUtils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameContext.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Dungeon.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -89,12 +101,6 @@
     <ClInclude Include="src\common\SDLDeleter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\overworld\MapLoader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\overworld\Map.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\GameObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -104,13 +110,40 @@
     <ClInclude Include="src\Player.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\AnimationHolder.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\overworld\TileAnimation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\overworld\OverworldSpriteType.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\Fonts.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PlayerStatusDisplay.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\Colors.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Constants.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CommandDisplay.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Screen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ShapeUtils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameContext.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Dungeon.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ScreenType.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

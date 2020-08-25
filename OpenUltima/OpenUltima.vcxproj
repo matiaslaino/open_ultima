@@ -80,8 +80,9 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\vclibs\SDL2-2.0.12\include;C:\vclibs\SDL2_image-2.0.5\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\vclibs\SDL2-2.0.12\lib\x64;C:\vclibs\SDL2_image-2.0.5\lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\vclibs\SDL2_ttf-2.0.15\include;C:\vclibs\SDL2-2.0.12\include;C:\vclibs\SDL2_image-2.0.5\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\vclibs\SDL2-2.0.12\lib\x64;C:\vclibs\SDL2_image-2.0.5\lib\x64;C:\vclibs\SDL2_ttf-2.0.15\lib\x64;$(LibraryPath)</LibraryPath>
+    <ExecutablePath>C:\vclibs\SDL2_ttf-2.0.15\lib\x64;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -126,7 +127,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -146,11 +147,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\AnimationHolder.cpp" />
+    <ClCompile Include="src\Dungeon.cpp" />
+    <ClCompile Include="src\GameContext.cpp" />
+    <ClCompile Include="src\ShapeUtils.cpp" />
+    <ClCompile Include="src\Screen.cpp" />
+    <ClCompile Include="src\CommandDisplay.cpp" />
+    <ClCompile Include="src\PlayerStatusDisplay.cpp" />
+    <ClCompile Include="src\common\Fonts.cpp" />
     <ClCompile Include="src\Player.cpp" />
     <ClCompile Include="src\overworld\Overworld.cpp" />
-    <ClCompile Include="src\overworld\Map.cpp" />
-    <ClCompile Include="src\overworld\MapLoader.cpp" />
     <ClCompile Include="src\overworld\OverworldSpriteType.cpp" />
     <ClCompile Include="src\common\LTexture.cpp" />
     <ClCompile Include="src\common\LTimer.cpp" />
@@ -163,12 +168,19 @@
     <ClCompile Include="src\overworld\TileAnimation.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\AnimationHolder.h" />
+    <ClInclude Include="src\Dungeon.h" />
+    <ClInclude Include="src\GameContext.h" />
+    <ClInclude Include="src\ScreenType.h" />
+    <ClInclude Include="src\ShapeUtils.h" />
+    <ClInclude Include="src\Screen.h" />
+    <ClInclude Include="src\CommandDisplay.h" />
+    <ClInclude Include="src\common\Colors.h" />
+    <ClInclude Include="src\Constants.h" />
+    <ClInclude Include="src\PlayerStatusDisplay.h" />
+    <ClInclude Include="src\common\Fonts.h" />
     <ClInclude Include="src\Player.h" />
     <ClInclude Include="src\GameObject.h" />
     <ClInclude Include="src\overworld\Overworld.h" />
-    <ClInclude Include="src\overworld\Map.h" />
-    <ClInclude Include="src\overworld\MapLoader.h" />
     <ClInclude Include="src\common\SDLDeleter.h" />
     <ClInclude Include="src\overworld\Constants.h" />
     <ClInclude Include="src\overworld\OverworldSpriteType.h" />
