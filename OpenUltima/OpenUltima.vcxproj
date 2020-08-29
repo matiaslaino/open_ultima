@@ -147,7 +147,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\Dungeon.cpp" />
+    <ClCompile Include="src\dungeon\Dungeon.cpp" />
+    <ClCompile Include="src\DungeonScreen.cpp" />
     <ClCompile Include="src\GameContext.cpp" />
     <ClCompile Include="src\ShapeUtils.cpp" />
     <ClCompile Include="src\Screen.cpp" />
@@ -168,7 +169,12 @@
     <ClCompile Include="src\overworld\TileAnimation.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Dungeon.h" />
+    <ClInclude Include="src\CardinalPoint.h" />
+    <ClInclude Include="src\common\Direction.h" />
+    <ClInclude Include="src\dungeon\Dungeon.h" />
+    <ClInclude Include="src\DungeonScreen.h" />
+    <ClInclude Include="src\dungeon\DungeonFeature.h" />
+    <ClInclude Include="src\dungeon\VisibleDungeonSpace.h" />
     <ClInclude Include="src\GameContext.h" />
     <ClInclude Include="src\ScreenType.h" />
     <ClInclude Include="src\ShapeUtils.h" />
@@ -192,6 +198,9 @@
     <ClInclude Include="src\PixelDecodeStrategy.h" />
     <ClInclude Include="src\TileTypeLoader.h" />
     <ClInclude Include="src\overworld\TileAnimation.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="src\COPYING.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

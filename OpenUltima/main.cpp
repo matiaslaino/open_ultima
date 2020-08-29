@@ -22,7 +22,7 @@ and may not be redistributed without written permission.*/
 #include "src/Constants.h"
 #include "src/CommandDisplay.h"
 #include "src/GameContext.h"
-#include "src/Dungeon.h"
+#include "src/DungeonScreen.h"
 
 using namespace std;
 using namespace OpenUltima;
@@ -162,37 +162,6 @@ SDL_Texture* loadTexture(std::string path)
 	return newTexture;
 }
 
-//struct SDL_Deleter {
-//	void operator()(SDL_Surface* ptr) { if (ptr) SDL_FreeSurface(ptr); }
-//	void operator()(SDL_Texture* ptr) { if (ptr) SDL_DestroyTexture(ptr); }
-//	void operator()(SDL_Renderer* ptr) { if (ptr) SDL_DestroyRenderer(ptr); }
-//	void operator()(SDL_Window* ptr) { if (ptr) SDL_DestroyWindow(ptr); }
-//	void operator()(SDL_RWops* ptr) { if (ptr) SDL_RWclose(ptr); }
-//};
-
-//std::vector<uint8_t> load_file(std::string const& filepath)
-//{
-//	std::ifstream ifs(filepath, std::ios::binary | std::ios::ate);
-//
-//	if (!ifs)
-//		throw std::runtime_error(filepath + ": " + std::strerror(errno));
-//
-//	auto end = ifs.tellg();
-//	ifs.seekg(0, std::ios::beg);
-//
-//	auto size = std::size_t(end - ifs.tellg());
-//
-//	if (size == 0) // avoid undefined behavior 
-//		return {};
-//
-//	std::vector<uint8_t> buffer(size);
-//
-//	if (!ifs.read((char*)buffer.data(), buffer.size()))
-//		throw std::runtime_error(filepath + ": " + std::strerror(errno));
-//
-//	return buffer;
-//}
-
 int main(int argc, char* args[])
 {
 	//Start up SDL and create window
@@ -217,14 +186,14 @@ int main(int argc, char* args[])
 
 			auto player = make_shared<Player>(20, 20);
 			auto gameContext = make_shared<GameContext>(player);
-			auto overworld = make_unique<Overworld>(gameContext, 19, 9);
-			auto dungeonScreen = make_unique<Dungeon>(gameContext);
+			auto overworldScreen = make_shared<Overworld>(gameContext, 19, 9);
+			auto dungeonScreen = make_shared<DungeonScreen>(gameContext);
 
 			auto egaTilesPath = "F:\\GOGLibrary\\Ultima 1\\EGATILES.BIN";
 			auto cgaTilesPath = "F:\\GOGLibrary\\Ultima 1\\CGATILES.BIN";
 			auto usingEga = true;
 
-			overworld->init(gRenderer, make_unique<EGARowPlanarDecodeStrategy>().get(), egaTilesPath);
+			overworldScreen->init(gRenderer, make_unique<EGARowPlanarDecodeStrategy>().get(), egaTilesPath);
 
 			SDL_RenderSetLogicalSize(gRenderer, 320, 200);
 
@@ -235,6 +204,12 @@ int main(int argc, char* args[])
 			_playerStatusDisplay = make_shared<PlayerStatusDisplay>(gRenderer, player);
 			_commandDisplay = make_shared<CommandDisplay>(gRenderer);
 			SDL_Rect commandDisplayBox = { CommandDisplay::POSITION_X, CommandDisplay::POSITION_Y, CommandDisplay::WIDTH, CommandDisplay::HEIGHT };
+
+			shared_ptr<Dungeon> dungeon = make_shared<Dungeon>("My pet dungeon");
+			dungeon->randomize();
+			dungeonScreen->setDungeon(dungeon);
+
+			shared_ptr<Screen> currentScreen = static_pointer_cast<Screen>(overworldScreen);
 
 			//While application is running
 			while (!quit)
@@ -254,15 +229,15 @@ int main(int argc, char* args[])
 							if (pressedKey == SDLK_PAGEDOWN) {
 								usingEga = !usingEga;
 								if (usingEga) {
-									overworld->init(gRenderer, make_unique<EGARowPlanarDecodeStrategy>().get(), egaTilesPath);
+									overworldScreen->init(gRenderer, make_unique<EGARowPlanarDecodeStrategy>().get(), egaTilesPath);
 								}
 								else {
-									overworld->init(gRenderer, make_unique<CGALinearDecodeStrategy>().get(), cgaTilesPath);
+									overworldScreen->init(gRenderer, make_unique<CGALinearDecodeStrategy>().get(), cgaTilesPath);
 								}
 							}
 						}
 
-						overworld->handle(e);
+						currentScreen->handle(e);
 					}
 				}
 
@@ -277,21 +252,23 @@ int main(int argc, char* args[])
 				SDL_RenderClear(gRenderer);
 
 				if (gameContext->getCurrentScreen() == ScreenType::Overworld) {
-					overworld->update(timeStep);
-				
-					int mapViewPadding = (GAME_VIEW_WIDTH - Overworld::MAP_WIDTH_PX) / 2;
-					SDL_Rect mapViewport = { mapViewPadding, mapViewPadding, Overworld::MAP_WIDTH_PX, Overworld::MAP_HEIGHT_PX };
-					SDL_RenderSetViewport(gRenderer, &mapViewport);
-
-					overworld->draw(gRenderer);
+					currentScreen = static_pointer_cast<Screen>(overworldScreen);
 				}
-				else {
-					dungeonScreen->update(timeStep);
-					SDL_Rect viewPort = { 8, 8, Overworld::MAP_WIDTH_PX, Overworld::MAP_HEIGHT_PX };
-					SDL_RenderSetViewport(gRenderer, &viewPort);
-
-					dungeonScreen->draw(gRenderer);
+				else
+				{
+					currentScreen = static_pointer_cast<Screen>(dungeonScreen);
 				}
+
+				currentScreen->update(timeStep);
+
+
+				overworldScreen->update(timeStep);
+
+				int mapViewPadding = (GAME_VIEW_WIDTH - Overworld::MAP_WIDTH_PX) / 2;
+				SDL_Rect mapViewport = { mapViewPadding, mapViewPadding, Overworld::MAP_WIDTH_PX, Overworld::MAP_HEIGHT_PX };
+				SDL_RenderSetViewport(gRenderer, &mapViewport);
+
+				currentScreen->draw(gRenderer);
 
 				SDL_Rect viewport = { PlayerStatusDisplay::POSITION_X, PlayerStatusDisplay::POSITION_Y, PlayerStatusDisplay::WIDTH, PlayerStatusDisplay::HEIGHT };
 				SDL_RenderSetViewport(gRenderer, &viewport);

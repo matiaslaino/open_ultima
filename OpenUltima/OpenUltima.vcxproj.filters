@@ -69,7 +69,10 @@
     <ClCompile Include="src\GameContext.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Dungeon.cpp">
+    <ClCompile Include="src\DungeonScreen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\dungeon\Dungeon.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -140,11 +143,29 @@
     <ClInclude Include="src\GameContext.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Dungeon.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\ScreenType.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\DungeonScreen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\dungeon\Dungeon.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CardinalPoint.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\dungeon\VisibleDungeonSpace.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\dungeon\DungeonFeature.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\Direction.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="src\COPYING.txt" />
   </ItemGroup>
 </Project>

@@ -9,11 +9,12 @@
 #include "../PlayerStatusDisplay.h"
 #include <map>
 #include "../GameContext.h"
+#include "../Screen.h"
 
 using namespace std;
 using namespace OpenUltima;
 
-class Overworld
+class Overworld : public Screen
 {
 public:
 	static constexpr int DISPLAY_SIZE_TILES_WIDTH = 19;
@@ -21,7 +22,7 @@ public:
 	static constexpr int MAP_WIDTH_PX = DISPLAY_SIZE_TILES_WIDTH * TILE_WIDTH;
 	static constexpr int MAP_HEIGHT_PX = DISPLAY_SIZE_TILES_HEIGHT * TILE_WIDTH;
 	
-	Overworld(shared_ptr<GameContext> context, int widthTiles, int heightTiles) : _gameContext(context)
+	Overworld(shared_ptr<GameContext> context, int widthTiles, int heightTiles) : Screen(context)
 	{
 		_camera.w = DISPLAY_SIZE_TILES_WIDTH * TILE_WIDTH;
 		_camera.h = DISPLAY_SIZE_TILES_HEIGHT * TILE_HEIGHT;
@@ -30,9 +31,9 @@ public:
 	};
 
 	void init(SDL_Renderer* renderer, PixelDecodeStrategy* pixelDecodeStrategy, string tilesFsPath);
-	virtual void update(float elapsed);
-	virtual void draw(SDL_Renderer* renderer);
-	virtual void handle(const SDL_Event& event);
+	virtual void update(float elapsed) override;
+	virtual void draw(SDL_Renderer* renderer) override;
+	virtual void handle(const SDL_Event& event) override;
 
 private:
 	static constexpr int BOUND_X_TILES = 167;
@@ -44,7 +45,6 @@ private:
 
 	static OverworldSpriteType::SpriteType getSpriteType(int tileTypeId);
 
-	shared_ptr<GameContext> _gameContext;
 	shared_ptr<Tile> _playerTile;
 	vector<shared_ptr<Tile>> _tiles;
 	SDL_Rect _camera;
