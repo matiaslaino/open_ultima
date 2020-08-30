@@ -1,5 +1,5 @@
 # open_ultima
-An open source remake of Ultima 1: First Age of Darkness
+An open source remake of Ultima 1: First Age of Darkness in very, very, very early stages of development.
 
 This project is the result of my personal goal to better learn SDL and discover newer C++ features, so please keep that in mind when looking at the ugly code!
 
@@ -16,4 +16,4 @@ Features implemented:
   - Basic overworld.
   - Super basic dungeon crawling in a single column.
 
-![](open_ultima.gif)
+![Demo](open_ultima.gif)
