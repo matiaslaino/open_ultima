@@ -102,8 +102,13 @@ void DungeonScreen::draw(SDL_Renderer* renderer)
 		if (tile.right->feature == DungeonFeature::Door) {
 			Door::draw(renderer, distance, Direction::Right);
 		}
+
 		if (tile.left->feature == DungeonFeature::Door) {
 			Door::draw(renderer, distance, Direction::Left);
+		}
+
+		if (tile.feature == DungeonFeature::Door) {
+			Door::drawFrontFacing(renderer);
 		}
 
 		distance++;

@@ -1,5 +1,17 @@
 #include "Door.h"
 
+void Door::drawFrontFacing(SDL_Renderer* renderer)
+{
+	int x1 = 116;
+	int y1 = 106;
+	int y2 = y1 - 53;
+	int x2 = x1 + 70;
+
+	SDL_RenderDrawLine(renderer, x1, y1, x1, y2);
+	SDL_RenderDrawLine(renderer, x1, y2, x2, y2);
+	SDL_RenderDrawLine(renderer, x2, y2, x2, y1);
+}
+
 void Door::draw(SDL_Renderer* renderer, int distance, Direction direction)
 {
 	int halfScreenOffset = 152;
