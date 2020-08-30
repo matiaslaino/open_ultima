@@ -31,6 +31,8 @@ private:
 
 	shared_ptr<Dungeon> _dungeon;
 	vector<VisibleDungeonSpace> _vision;
+	int _drawCounter = 0;
+	int _drawEnabled = true;
 
 	void moveForward();
 	

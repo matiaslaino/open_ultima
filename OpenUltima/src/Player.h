@@ -28,8 +28,8 @@ private:
 	int _overworldX;
 	int _overworldY;
 	int _dungeonY = 0;
+	int _dungeonX = 2;
 	int _dungeonLevel = 0;
-	int _dungeonX = 0;
 	CardinalPoint _dungeonOrientation = CardinalPoint::South;
 
 	int _hp = 150;

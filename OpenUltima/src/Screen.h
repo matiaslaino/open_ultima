@@ -18,5 +18,6 @@ public:
 	virtual void handle(const SDL_Event& e) {}
 protected:
 	shared_ptr<GameContext> _gameContext;
+	void clearScreen(SDL_Renderer* renderer);
 };
 

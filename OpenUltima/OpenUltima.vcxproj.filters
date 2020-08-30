@@ -75,6 +75,9 @@
     <ClCompile Include="src\dungeon\Dungeon.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\dungeon\Door.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\overworld\Tile.h">
@@ -158,10 +161,13 @@
     <ClInclude Include="src\dungeon\VisibleDungeonSpace.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\dungeon\DungeonFeature.h">
+    <ClInclude Include="src\common\Direction.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\common\Direction.h">
+    <ClInclude Include="src\dungeon\Door.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\dungeon\DungeonFeature.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

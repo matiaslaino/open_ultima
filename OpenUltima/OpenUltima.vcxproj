@@ -147,6 +147,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\dungeon\Door.cpp" />
     <ClCompile Include="src\dungeon\Dungeon.cpp" />
     <ClCompile Include="src\DungeonScreen.cpp" />
     <ClCompile Include="src\GameContext.cpp" />
@@ -169,6 +170,7 @@
     <ClCompile Include="src\overworld\TileAnimation.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\dungeon\Door.h" />
     <ClInclude Include="src\CardinalPoint.h" />
     <ClInclude Include="src\common\Direction.h" />
     <ClInclude Include="src\dungeon\Dungeon.h" />

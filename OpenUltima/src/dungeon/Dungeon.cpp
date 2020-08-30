@@ -5,7 +5,14 @@ void Dungeon::randomize()
 {
 	vector<vector<DungeonFeature>> levelColumns = { 
 		{DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None},
-		{DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall},
+		{DungeonFeature::Door, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Door, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall},
+		{DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None},
+		{DungeonFeature::Door, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Door, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall},
+		{DungeonFeature::Door, DungeonFeature::None, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall},
+		{DungeonFeature::Door, DungeonFeature::None, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall},
+		{DungeonFeature::Door, DungeonFeature::None, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall},
+		{DungeonFeature::Door, DungeonFeature::None, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall},
+		{DungeonFeature::Door, DungeonFeature::None, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall},
 	};
 	_levels.push_back(levelColumns);
 
@@ -23,11 +30,11 @@ vector<VisibleDungeonSpace> Dungeon::getVisible(int level, int x, int y, Cardina
 
 	switch (viewDirection) {
 	case CardinalPoint::East:
-		while (i <= MAX_VISIBILITY && !wall) {
+		while (i < MAX_VISIBILITY && !wall) {
 			auto cellIndex = x + i;
 
 			auto cellFeature = cellIndex == SIZE ? DungeonFeature::Wall : levelFeatures[cellIndex][y];
-			if (cellFeature == DungeonFeature::Wall) wall = true;
+			if (isWalledFeature(cellFeature)) wall = true;
 
 			auto leftFeature = wall || y == 0 ? DungeonFeature::Wall : levelFeatures[cellIndex][y - 1];
 			auto rightFeature = wall || y == SIZE - 1 ? DungeonFeature::Wall : levelFeatures[cellIndex][y + 1];
@@ -38,10 +45,10 @@ vector<VisibleDungeonSpace> Dungeon::getVisible(int level, int x, int y, Cardina
 		}
 		break;
 	case CardinalPoint::West: {
-		while (i <= MAX_VISIBILITY && !wall) {
+		while (i < MAX_VISIBILITY && !wall) {
 			auto cellIndex = x - i;
 			auto cellFeature = cellIndex == -1 ? DungeonFeature::Wall : levelFeatures[cellIndex][y];
-			if (cellFeature == DungeonFeature::Wall) wall = true;
+			if (isWalledFeature(cellFeature)) wall = true;
 
 			auto leftFeature = wall || y == SIZE - 1 ? DungeonFeature::Wall : levelFeatures[cellIndex][y + 1];
 			auto rightFeature = wall || y == 0 ? DungeonFeature::Wall : levelFeatures[cellIndex][y - 1];
@@ -53,10 +60,10 @@ vector<VisibleDungeonSpace> Dungeon::getVisible(int level, int x, int y, Cardina
 		break;
 	}
 	case CardinalPoint::North: {
-		while (i <= MAX_VISIBILITY && !wall) {
+		while (i < MAX_VISIBILITY && !wall) {
 			auto cellIndex = y - i;
 			auto cellFeature = cellIndex == -1 ? DungeonFeature::Wall : levelFeatures[x][cellIndex];
-			if (cellFeature == DungeonFeature::Wall) wall = true;
+			if (isWalledFeature(cellFeature)) wall = true;
 
 			auto leftFeature = wall || x == 0 ? DungeonFeature::Wall : levelFeatures[x - 1][cellIndex];
 			auto rightFeature = wall || x == SIZE - 1 ? DungeonFeature::Wall : levelFeatures[x + 1][cellIndex];
@@ -67,10 +74,10 @@ vector<VisibleDungeonSpace> Dungeon::getVisible(int level, int x, int y, Cardina
 		}
 	} break;
 	case CardinalPoint::South:
-		while (i <= MAX_VISIBILITY && !wall) {
+		while (i < MAX_VISIBILITY && !wall) {
 			auto cellIndex = y + i;
 			auto cellFeature = cellIndex == SIZE ? DungeonFeature::Wall : levelFeatures[x][cellIndex];
-			if (cellFeature == DungeonFeature::Wall) wall = true;
+			if (isWalledFeature(cellFeature)) wall = true;
 
 			auto leftFeature = wall || x == SIZE - 1 ? DungeonFeature::Wall : levelFeatures[x + 1][cellIndex];
 			auto rightFeature = wall || x == 0 ? DungeonFeature::Wall : levelFeatures[x - 1][cellIndex];
