@@ -5,6 +5,8 @@ This project is the result of my personal goal to better learn SDL and discover 
 
 For compiling (for now) use Visual C++ and targeting C++ 17.
 
+Requires (of course) the original game files, you can get them from GOG.com!
+
 Dependencies:
 SDL 2.0.12
 SDL TTF 2.0.15
