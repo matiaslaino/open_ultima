@@ -1,7 +1,8 @@
 #pragma once
 #include <string>
+#include <utility>
 #include <vector>
-#include "../CardinalPoint.h"
+#include "../common/CardinalPoint.h"
 #include "VisibleDungeonSpace.h"
 #include "DungeonFeature.h"
 
@@ -10,7 +11,7 @@ using namespace std;
 class Dungeon
 {
 public:
-	Dungeon(string name) : _name(name) {}
+	explicit Dungeon(string name) : _name(std::move(name)) {}
 	void randomize();
 	vector<VisibleDungeonSpace> getVisible(int level, int x, int y, CardinalPoint viewDirection);
 private:

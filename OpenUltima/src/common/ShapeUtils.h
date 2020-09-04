@@ -1,5 +1,5 @@
 #pragma once
-#include "common/LTexture.h"
+#include "graphics/LTexture.h"
 #include <memory>
 
 using namespace std;

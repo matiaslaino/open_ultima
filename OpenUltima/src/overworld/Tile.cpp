@@ -1,5 +1,6 @@
 #include <cstddef>
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "Tile.h"
@@ -8,74 +9,69 @@ using namespace std;
 using namespace OpenUltima;
 
 Tile::Tile(int x, int y, shared_ptr<OverworldSpriteType> sprite, shared_ptr<TileAnimation> tileAnimation)
-	: _sprite(sprite), _tileAnimation(tileAnimation)
-{
-	_box.x = x;
-	_box.y = y;
+        : _sprite(std::move(sprite)), _tileAnimation(std::move(tileAnimation)) {
+    _box.x = x;
+    _box.y = y;
 
-	_box.w = TILE_WIDTH;
-	_box.h = TILE_HEIGHT;
+    _box.w = TILE_WIDTH;
+    _box.h = TILE_HEIGHT;
 }
 
-void Tile::draw(SDL_Renderer* renderer, SDL_Rect camera) {
-	if (isVisible(camera)) {
-		auto animation = _sprite->getAnimationType();
+void Tile::draw(SDL_Renderer *renderer, SDL_Rect camera) {
+    if (isVisible(camera)) {
+        auto renderQuads = _tileAnimation->getRenderQuads(renderer, _sprite->getAnimationType(), _box,
+                                                          _sprite->getSource(),
+                                                          _sprite->getSwapOffset());
 
-		auto renderQuads = _tileAnimation->getRenderQuads(renderer, _sprite->getAnimationType(), _box, _sprite->getSource(), _sprite->swapOffset());
-
-		for (auto renderQuad : renderQuads) {
-			SDL_Rect adjustedRenderTargetQuad = { renderQuad.target.x - camera.x, renderQuad.target.y - camera.y, renderQuad.target.w, renderQuad.target.h };
-			SDL_RenderCopyEx(renderer, _sprite->getTexture().get()->getRawTexture(), &renderQuad.source, &adjustedRenderTargetQuad, 0, NULL, SDL_FLIP_NONE);
-		}
-	}
+        for (auto renderQuad : renderQuads) {
+            SDL_Rect adjustedRenderTargetQuad = {renderQuad.target.x - camera.x, renderQuad.target.y - camera.y,
+                                                 renderQuad.target.w, renderQuad.target.h};
+            SDL_RenderCopyEx(renderer, _sprite->getTexture()->getRawTexture(), &renderQuad.source,
+                             &adjustedRenderTargetQuad, 0, nullptr, SDL_FLIP_NONE);
+        }
+    }
 }
 
-void OpenUltima::Tile::update(float elapsed)
-{
-	_tileAnimation->update(elapsed, _sprite->getAnimationType(), _box);
+void OpenUltima::Tile::update(float elapsed) {
+    _tileAnimation->update(elapsed, _sprite->getAnimationType(), _box);
 }
 
-bool Tile::isVisible(SDL_Rect camera)
-{
-	//The sides of the rectangles
-	int leftA, leftB;
-	int rightA, rightB;
-	int topA, topB;
-	int bottomA, bottomB;
+bool Tile::isVisible(SDL_Rect camera) const {
+    //The sides of the rectangles
+    int leftA, leftB;
+    int rightA, rightB;
+    int topA, topB;
+    int bottomA, bottomB;
 
-	//Calculate the sides of rect A
-	leftA = _box.x;
-	rightA = _box.x + _box.w;
-	topA = _box.y;
-	bottomA = _box.y + _box.h;
+    //Calculate the sides of rect A
+    leftA = _box.x;
+    rightA = _box.x + _box.w;
+    topA = _box.y;
+    bottomA = _box.y + _box.h;
 
-	//Calculate the sides of rect B
-	leftB = camera.x;
-	rightB = camera.x + camera.w;
-	topB = camera.y;
-	bottomB = camera.y + camera.h;
+    //Calculate the sides of rect B
+    leftB = camera.x;
+    rightB = camera.x + camera.w;
+    topB = camera.y;
+    bottomB = camera.y + camera.h;
 
-	//If any of the sides from A are outside of B
-	if (bottomA <= topB)
-	{
-		return false;
-	}
+    //If any of the sides from A are outside of B
+    if (bottomA <= topB) {
+        return false;
+    }
 
-	if (topA >= bottomB)
-	{
-		return false;
-	}
+    if (topA >= bottomB) {
+        return false;
+    }
 
-	if (rightA <= leftB)
-	{
-		return false;
-	}
+    if (rightA <= leftB) {
+        return false;
+    }
 
-	if (leftA >= rightB)
-	{
-		return false;
-	}
+    if (leftA >= rightB) {
+        return false;
+    }
 
-	//If none of the sides from A are outside B
-	return true;
+    //If none of the sides from A are outside B
+    return true;
 }

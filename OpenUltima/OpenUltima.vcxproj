@@ -147,11 +147,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\common\ShapeUtils.cpp" />
     <ClCompile Include="src\dungeon\Door.cpp" />
     <ClCompile Include="src\dungeon\Dungeon.cpp" />
     <ClCompile Include="src\DungeonScreen.cpp" />
     <ClCompile Include="src\GameContext.cpp" />
-    <ClCompile Include="src\ShapeUtils.cpp" />
+    <ClCompile Include="src\overworld\graphics\CGALinearDecodeStrategy.cpp" />
+    <ClCompile Include="src\overworld\graphics\EGARowPlanarDecodeStrategy.cpp" />
+    <ClCompile Include="src\overworld\graphics\PixelDecodeStrategy.cpp" />
+    <ClCompile Include="src\overworld\TileTypeLoader.cpp" />
     <ClCompile Include="src\Screen.cpp" />
     <ClCompile Include="src\CommandDisplay.cpp" />
     <ClCompile Include="src\PlayerStatusDisplay.cpp" />
@@ -161,25 +165,24 @@
     <ClCompile Include="src\overworld\OverworldSpriteType.cpp" />
     <ClCompile Include="src\common\LTexture.cpp" />
     <ClCompile Include="src\common\LTimer.cpp" />
-    <ClCompile Include="src\EGARowPlanarDecodeStrategy.cpp" />
-    <ClCompile Include="src\CGALinearDecodeStrategy.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\overworld\Tile.cpp" />
-    <ClCompile Include="src\PixelDecodeStrategy.cpp" />
-    <ClCompile Include="src\TileTypeLoader.cpp" />
     <ClCompile Include="src\overworld\TileAnimation.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\common\ShapeUtils.h" />
     <ClInclude Include="src\dungeon\Door.h" />
-    <ClInclude Include="src\CardinalPoint.h" />
     <ClInclude Include="src\common\Direction.h" />
     <ClInclude Include="src\dungeon\Dungeon.h" />
     <ClInclude Include="src\DungeonScreen.h" />
     <ClInclude Include="src\dungeon\DungeonFeature.h" />
     <ClInclude Include="src\dungeon\VisibleDungeonSpace.h" />
     <ClInclude Include="src\GameContext.h" />
+    <ClInclude Include="src\overworld\graphics\CGALinearDecodeStrategy.h" />
+    <ClInclude Include="src\overworld\graphics\EGARowPlanarDecodeStrategy.h" />
+    <ClInclude Include="src\overworld\graphics\PixelDecodeStrategy.h" />
+    <ClInclude Include="src\overworld\TileTypeLoader.h" />
     <ClInclude Include="src\ScreenType.h" />
-    <ClInclude Include="src\ShapeUtils.h" />
     <ClInclude Include="src\Screen.h" />
     <ClInclude Include="src\CommandDisplay.h" />
     <ClInclude Include="src\common\Colors.h" />
@@ -189,20 +192,15 @@
     <ClInclude Include="src\Player.h" />
     <ClInclude Include="src\GameObject.h" />
     <ClInclude Include="src\overworld\Overworld.h" />
-    <ClInclude Include="src\common\SDLDeleter.h" />
     <ClInclude Include="src\overworld\Constants.h" />
     <ClInclude Include="src\overworld\OverworldSpriteType.h" />
     <ClInclude Include="src\common\LTexture.h" />
     <ClInclude Include="src\common\LTimer.h" />
-    <ClInclude Include="src\EGARowPlanarDecodeStrategy.h" />
-    <ClInclude Include="src\CGALinearDecodeStrategy.h" />
     <ClInclude Include="src\overworld\Tile.h" />
-    <ClInclude Include="src\PixelDecodeStrategy.h" />
-    <ClInclude Include="src\TileTypeLoader.h" />
     <ClInclude Include="src\overworld\TileAnimation.h" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="src\COPYING.txt" />
+    <Text Include="COPYING.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

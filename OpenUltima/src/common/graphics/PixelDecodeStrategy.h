@@ -8,5 +8,5 @@ class PixelDecodeStrategy
 {
 public:
 	virtual vector<uint32_t> GetPixels(vector<uint8_t> bytes) = 0;
-	virtual const int getBytesPerTile() = 0;
+	virtual int getBytesPerTile() = 0;
 };

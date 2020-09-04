@@ -1,3 +1,5 @@
 #pragma once
 
-enum class ScreenType { Overworld, Dungeon, Town, Space };
+enum class ScreenType {
+    Overworld, Dungeon, Town, Space
+};

@@ -3,7 +3,7 @@
 LTexture::LTexture()
 {
 	//Initialize
-	mTexture = NULL;
+	mTexture = nullptr;
 	mWidth = 0;
 	mHeight = 0;
 }
@@ -70,14 +70,14 @@ bool LTexture::loadFromColor(SDL_Renderer* renderer, int width, int height, int 
 	free();
 
 	SDL_Surface* surface = SDL_CreateRGBSurface(0, width, height, 32, r, g, b, a);
-	if (surface == NULL)
+	if (surface == nullptr)
 	{
 		printf("Unable to render color surface! SDL_ttf Error: %s\n", SDL_GetError());
 	}
 	else
 	{
 		mTexture = SDL_CreateTextureFromSurface(renderer, surface);
-		if (mTexture == NULL)
+		if (mTexture == nullptr)
 		{
 			printf("Unable to create texture from rendered text! SDL Error: %s\n", SDL_GetError());
 		}
@@ -93,18 +93,18 @@ bool LTexture::loadFromColor(SDL_Renderer* renderer, int width, int height, int 
 	}
 
 	//Return success
-	return mTexture != NULL;
+	return mTexture != nullptr;
 }
 
 
-bool LTexture::loadFromRenderedText(TTF_Font* font, SDL_Renderer* renderer, std::string textureText, SDL_Color textColor)
+bool LTexture::loadFromRenderedText(TTF_Font* font, SDL_Renderer* renderer, const std::string& textureText, SDL_Color textColor)
 {
 	//Get rid of preexisting texture
 	free();
 
 	//Render text surface
 	SDL_Surface* textSurface = TTF_RenderText_Solid(font, textureText.c_str(), textColor);
-	if (textSurface == NULL)
+	if (textSurface == nullptr)
 	{
 		printf("Unable to render text surface! SDL_ttf Error: %s\n", TTF_GetError());
 	}

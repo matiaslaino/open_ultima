@@ -1,5 +1,5 @@
 #pragma once
-#include "common/LTexture.h"
+#include "common/graphics/LTexture.h"
 #include <memory>
 #include "Player.h"
 
