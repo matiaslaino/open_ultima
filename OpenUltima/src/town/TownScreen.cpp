@@ -17,9 +17,24 @@ void TownScreen::draw(SDL_Renderer *renderer) {
 }
 
 void TownScreen::handle(const SDL_Event &e) {
-    Screen::handle(e);
+    if (e.type == SDL_KEYDOWN) {
+        auto pressedKey = e.key.keysym.sym;
+
+        switch (pressedKey) {
+            case SDLK_e:
+                _gameContext->setScreen(ScreenType::Overworld);
+                break;
+        }
+    }
 }
 
-void TownScreen::setTown(shared_ptr<Town> town) {
-    _town = std::move(town);
+void TownScreen::refresh() {
+    int x = _gameContext->getPlayer()->getOverworldX();
+    int y = _gameContext->getPlayer()->getOverworldY();
+
+    if (_gameContext->isInCastle()) {
+        _town = _townManager->getCastle(x, y);
+    } else {
+        _town = _townManager->getTown(x, y);
+    }
 }

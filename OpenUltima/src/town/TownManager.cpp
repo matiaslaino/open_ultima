@@ -1,6 +1,6 @@
 #include "TownManager.h"
 
-void TownManager::init(const shared_ptr<TownSpriteTypeLoader>& spriteTypeLoader, const string& mapFilePath) {
+void TownManager::init(const shared_ptr<TownSpriteTypeLoader> &spriteTypeLoader, const string &mapFilePath) {
     // Tile definition file contains 51 different tiles, no animations.
     auto file = SDL_RWFromFile(mapFilePath.c_str(), "r+b");
 
@@ -23,7 +23,7 @@ void TownManager::init(const shared_ptr<TownSpriteTypeLoader>& spriteTypeLoader,
 
             auto tile = make_shared<TownTile>(x * TownSpriteType::SPRITE_SIZE, y * TownSpriteType::SPRITE_SIZE, sprite);
             tiles.push_back(tile);
-            // tiles are store top to botton, left to right
+            // tiles are stored top to botton, left to right
             y++;
             if (y == 18) {
                 y = 0;
@@ -143,4 +143,54 @@ TownSpriteType::SpriteType TownManager::getTypeFromIndex(int index) {
         default:
             return TownSpriteType::SpriteType::NONE;
     }
+}
+
+shared_ptr<Town> TownManager::getTown(int x, int y) {
+    if (x == 65 && y == 22) return _towns[3];
+    if (x == 148 && y == 22) return _towns[4];
+    if (x == 149 && y == 22) return _towns[5];
+    if (x == 46 && y == 28) return _towns[6];
+    if (x == 47 && y == 28) return _towns[7];
+    if (x == 18 && y == 34) return _towns[2];
+    if (x == 19 && y == 34) return _towns[3];
+    if (x == 126 && y == 36) return _towns[4];
+    if (x == 127 && y == 36) return _towns[5];
+    if (x == 66 && y == 41) return _towns[6];
+    if (x == 67 && y == 41) return _towns[7];
+    if (x == 150 && y == 49) return _towns[2];
+    if (x == 151 && y == 49) return _towns[3];
+    if (x == 52 && y == 63) return _towns[4];
+    if (x == 53 && y == 63) return _towns[5];
+    if (x == 70 && y == 63) return _towns[6];
+    if (x == 71 && y == 63) return _towns[7];
+    if (x == 128 && y == 63) return _towns[2];
+    if (x == 129 && y == 63) return _towns[3];
+    if (x == 150 && y == 67) return _towns[4];
+    if (x == 151 && y == 67) return _towns[5];
+    if (x == 66 && y == 88) return _towns[6];
+    if (x == 67 && y == 88) return _towns[2];
+    if (x == 44 && y == 92) return _towns[3];
+    if (x == 45 && y == 92) return _towns[4];
+    if (x == 66 && y == 106) return _towns[5];
+    if (x == 67 && y == 106) return _towns[6];
+    if (x == 128 && y == 117) return _towns[7];
+    if (x == 129 && y == 117) return _towns[2];
+    if (x == 42 && y == 119) return _towns[3];
+    if (x == 43 && y == 119) return _towns[4];
+    if (x == 64 && y == 133) return _towns[5];
+    if (x == 65 && y == 133) return _towns[6];
+    if (x == 142 && y == 139) return _towns[7];
+    if (x == 143 && y == 139) return _towns[2];
+
+}
+
+shared_ptr<Town> TownManager::getCastle(int x, int y) {
+    if (x == 32 && y == 27) return _towns[0];
+    if (x == 33 && y == 27) return _towns[1];
+    if (x == 114 && y == 29) return _towns[0];
+    if (x == 115 && y == 29) return _towns[1];
+    if (x == 40 && y == 38) return _towns[0];
+    if (x == 41 && y == 38) return _towns[1];
+    if (x == 30 && y == 126) return _towns[0];
+    if (x == 31 && y == 126) return _towns[1];
 }

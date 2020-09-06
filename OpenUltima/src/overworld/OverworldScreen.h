@@ -43,8 +43,6 @@ private:
     static constexpr int MAP_FILE_SIZE = 13103;
     static constexpr int TILES_PER_ROW = 168;
 
-    static constexpr SDL_Color COLOR_TEXT = {0x42, 0xFF, 0xFF};
-
     static OverworldSpriteType::SpriteType getSpriteType(int tileTypeId);
 
     shared_ptr<OverworldTile> _playerTile;

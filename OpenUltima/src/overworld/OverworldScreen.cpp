@@ -5,9 +5,10 @@
 #include "TileAnimation.h"
 #include "../common/Fonts.h"
 #include "../CommandDisplay.h"
+#include <iostream>
 
-void
-OverworldScreen::init(SDL_Renderer *renderer, PixelDecodeStrategy *pixelDecodeStrategy, const string &tilesFsPath) {
+void OverworldScreen::init(SDL_Renderer *renderer,
+                           PixelDecodeStrategy *pixelDecodeStrategy, const string &tilesFsPath) {
     _tiles.clear();
     _spritesMap.clear();
 
@@ -67,10 +68,22 @@ OverworldScreen::init(SDL_Renderer *renderer, PixelDecodeStrategy *pixelDecodeSt
         auto tile1 = make_shared<OverworldTile>(toPixels(x1), toPixels(y1), sprite1, animation);
         _tiles.push_back(tile1);
 
+        if (sprite1->getType() == OverworldSpriteType::SpriteType::TOWN) {
+            cout << "Town at: " << x1 << "," << y1 << "\n";
+        } else if (sprite1->getType() == OverworldSpriteType::SpriteType::CASTLE) {
+            cout << "Castle at: " << x1 << "," << y1 << "\n";
+        }
+
         animation = sprite2->getAnimationType() == TileAnimation::AnimationType::SCROLLING ? defaultSharedAnimation
                                                                                            : make_shared<TileAnimation>();
         auto tile2 = make_shared<OverworldTile>(toPixels(x2), toPixels(y2), sprite2, animation);
         _tiles.push_back(tile2);
+
+        if (sprite1->getType() == OverworldSpriteType::SpriteType::TOWN) {
+            cout << "Town at: " << x2 << "," << y2 << "\n";
+        } else if (sprite1->getType() == OverworldSpriteType::SpriteType::CASTLE) {
+            cout << "Castle at: " << x2 << "," << y2 << "\n";
+        }
     }
 
     _playerTile = make_shared<OverworldTile>(toPixels(_gameContext->getPlayer()->getOverworldX()),
@@ -123,6 +136,8 @@ void OverworldScreen::move(int deltaX, int deltaY) {
 
     _playerTile->setCoordinates(toPixels(playerX), toPixels(playerY));
 
+    cout << "\nMoved to: " << playerX << ", " << playerY << "\n";
+
     // re-center camera on player if possible
     setCamera();
 }
@@ -138,8 +153,10 @@ void OverworldScreen::enterPlace() {
 
     switch (currentTileType) {
         case OverworldSpriteType::SpriteType::CASTLE:
+            _gameContext->enterCastle();
+            break;
         case OverworldSpriteType::SpriteType::TOWN:
-            _gameContext->setScreen(ScreenType::Town);
+            _gameContext->enterTown();
             break;
         case OverworldSpriteType::SpriteType::DUNGEON_ENTRANCE:
             _gameContext->setScreen(ScreenType::Dungeon);

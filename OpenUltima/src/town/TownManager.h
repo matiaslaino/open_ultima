@@ -11,7 +11,9 @@ class TownManager {
 public:
     void init(const shared_ptr<TownSpriteTypeLoader> &spriteTypeLoader, const string &mapFilePath);
 
-    shared_ptr<Town> getTown(int index) { return _towns[index]; };
+    shared_ptr<Town> getTown(int x, int y);
+
+    shared_ptr<Town> getCastle(int x, int y);
 
 private:
     static constexpr int MAPS_COUNT = 10;

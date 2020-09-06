@@ -6,6 +6,10 @@ class Tile {
 public:
     explicit Tile(SDL_Rect box) : _box(box) {};
 
+    int getX() { return _box.x; }
+
+    int getY() { return _box.y; }
+
     virtual void draw(SDL_Renderer *renderer, SDL_Rect camera) = 0;
 
     void setCoordinates(int x, int y) {

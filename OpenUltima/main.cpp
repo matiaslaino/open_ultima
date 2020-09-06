@@ -139,10 +139,8 @@ int main(int argc, char *args[]) {
                                    gRenderer);
             auto townManager = make_shared<TownManager>();
             townManager->init(townSpriteLoader, "F:\\GOGLibrary\\Ultima 1\\TCD.BIN");
-            auto town = townManager->getTown(0);
 
-            auto townScreen = make_shared<TownScreen>(gameContext);
-            townScreen->setTown(town);
+            auto townScreen = make_shared<TownScreen>(gameContext, townManager);
 
             overworldScreen->init(gRenderer, make_unique<EGARowPlanarDecodeStrategy>(16, 16).get(), egaTilesPath);
 
@@ -208,6 +206,9 @@ int main(int argc, char *args[]) {
                         currentScreen = static_pointer_cast<Screen>(dungeonScreen);
                         break;
                     case ScreenType::Town:
+                        if (currentScreen != townScreen) {
+                            townScreen->refresh();
+                        }
                         currentScreen = static_pointer_cast<Screen>(townScreen);
                         break;
                     case ScreenType::Space:
