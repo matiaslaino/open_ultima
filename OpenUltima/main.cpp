@@ -11,6 +11,9 @@
 #include "src/Constants.h"
 #include "src/CommandDisplay.h"
 #include "src/DungeonScreen.h"
+#include "src/town/TownManager.h"
+#include "src/town/TownScreen.h"
+#include "src/town/TownSpriteTypeLoader.h"
 
 using namespace std;
 using namespace OpenUltima;
@@ -130,7 +133,18 @@ int main(int argc, char *args[]) {
             auto cgaTilesPath = "F:\\GOGLibrary\\Ultima 1\\CGATILES.BIN";
             auto usingEga = true;
 
-            overworldScreen->init(gRenderer, make_unique<EGARowPlanarDecodeStrategy>().get(), egaTilesPath);
+            auto townSpriteLoader = make_shared<TownSpriteTypeLoader>();
+            townSpriteLoader->init("F:\\GOGLibrary\\Ultima 1\\EGATOWN.BIN",
+                                   make_unique<EGARowPlanarDecodeStrategy>(8, 8).get(),
+                                   gRenderer);
+            auto townManager = make_shared<TownManager>();
+            townManager->init(townSpriteLoader, "F:\\GOGLibrary\\Ultima 1\\TCD.BIN");
+            auto town = townManager->getTown(0);
+
+            auto townScreen = make_shared<TownScreen>(gameContext);
+            townScreen->setTown(town);
+
+            overworldScreen->init(gRenderer, make_unique<EGARowPlanarDecodeStrategy>(16, 16).get(), egaTilesPath);
 
             SDL_RenderSetLogicalSize(gRenderer, 320, 200);
 
@@ -147,6 +161,7 @@ int main(int argc, char *args[]) {
             dungeon->randomize();
             dungeonScreen->setDungeon(dungeon);
 
+
             shared_ptr<Screen> currentScreen = static_pointer_cast<Screen>(overworldScreen);
 
             //While application is running
@@ -162,10 +177,10 @@ int main(int argc, char *args[]) {
                             if (pressedKey == SDLK_PAGEDOWN) {
                                 usingEga = !usingEga;
                                 if (usingEga) {
-                                    overworldScreen->init(gRenderer, make_unique<EGARowPlanarDecodeStrategy>().get(),
+                                    overworldScreen->init(gRenderer, make_unique<EGARowPlanarDecodeStrategy>(16, 16).get(),
                                                           egaTilesPath);
                                 } else {
-                                    overworldScreen->init(gRenderer, make_unique<CGALinearDecodeStrategy>().get(),
+                                    overworldScreen->init(gRenderer, make_unique<CGALinearDecodeStrategy>(16, 16).get(),
                                                           cgaTilesPath);
                                 }
                             }

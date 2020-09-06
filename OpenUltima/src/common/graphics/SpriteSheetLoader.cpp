@@ -1,8 +1,8 @@
 #include "SpriteSheetLoader.h"
 
-shared_ptr<LTexture>
-SpriteSheetLoader::loadTexture(SDL_RWops *file, PixelDecodeStrategy *pixelDecodeStrategy, SDL_Renderer *renderer,
-                               int spriteCount, int spriteWidth, int spriteHeight) {
+shared_ptr<LTexture> SpriteSheetLoader::loadTexture(SDL_RWops *file, PixelDecodeStrategy *pixelDecodeStrategy,
+                                                    SDL_Renderer *renderer,
+                                                    int spriteCount, int spriteWidth, int spriteHeight) {
     auto tileBytesCount = pixelDecodeStrategy->getBytesPerTile();
     shared_ptr<uint8_t[]> buffer(new uint8_t[tileBytesCount * spriteCount]);
 

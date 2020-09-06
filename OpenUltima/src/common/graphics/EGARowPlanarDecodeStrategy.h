@@ -7,6 +7,8 @@ namespace OpenUltima {
     class EGARowPlanarDecodeStrategy :
             public PixelDecodeStrategy {
     public:
+        EGARowPlanarDecodeStrategy(int tileWidth, int tileHeight) : PixelDecodeStrategy(tileWidth, tileHeight) {}
+
         vector<uint32_t> GetPixels(vector<uint8_t> bytes) override;
 
     private:

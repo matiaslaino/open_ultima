@@ -2,13 +2,22 @@
 
 #include <vector>
 #include <SDL_render.h>
-#include "../common/graphics/PixelDecodeStrategy.h"
 #include <string>
+#include <map>
+
+#include "../common/graphics/PixelDecodeStrategy.h"
 #include "TownSpriteType.h"
 
 using namespace std;
 
 class TownSpriteTypeLoader {
-    vector<shared_ptr<TownSpriteType>>
-    loadSpriteTypes(string tilesFileLocation, PixelDecodeStrategy *pixelDecodeStrategy, SDL_Renderer *renderer);
+public:
+    void init(const string &tilesFileLocation,
+              PixelDecodeStrategy *pixelDecodeStrategy,
+              SDL_Renderer *renderer);
+
+    shared_ptr<TownSpriteType> getSpriteType(TownSpriteType::SpriteType type);
+
+private:
+    map<TownSpriteType::SpriteType, shared_ptr<TownSpriteType>> _spriteTypeMap;
 };

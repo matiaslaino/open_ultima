@@ -6,15 +6,17 @@ vector<shared_ptr<OverworldSpriteType>>
 TileTypeLoader::loadOverworldSprites(const string &tilesFileLocation, PixelDecodeStrategy *pixelDecodeStrategy,
                                      SDL_Renderer *renderer) {
     // Tile definition file contains 52 different tiles, some are actually the animated portion of another tile (castle with flag up, and with flag down).
-    SDL_RWops *file = SDL_RWFromFile(tilesFileLocation.c_str(), "r+b");
+    auto file = SDL_RWFromFile(tilesFileLocation.c_str(), "r+b");
 
-    auto overworldTexture = SpriteSheetLoader::loadTexture(file, pixelDecodeStrategy, renderer, 52, 16, 16);
+    auto overworldTexture = SpriteSheetLoader::loadTexture(file, pixelDecodeStrategy, renderer, 52,
+                                                           OverworldSpriteType::SPRITE_SIZE,
+                                                           OverworldSpriteType::SPRITE_SIZE);
 
     SDL_RWclose(file);
 
     vector<shared_ptr<OverworldSpriteType>> result;
 
-    int spriteOffset = 16;
+    int spriteOffset = OverworldSpriteType::SPRITE_SIZE;
 
     // Water
     int currentOffset = 0;

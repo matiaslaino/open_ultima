@@ -44,6 +44,8 @@ public:
         WANDERING_WARLOCK
     };
 
+    static constexpr int SPRITE_SIZE = 16;
+
     OverworldSpriteType(SpriteType type, shared_ptr<LTexture> overworldTexture, int textureOffset, int swapOffset);
 
     OverworldSpriteType(SpriteType type, shared_ptr<LTexture> overworldTexture, int textureOffset, bool scroll);

@@ -32,7 +32,14 @@ add_executable(open_ultima main.cpp src/common/graphics/CGALinearDecodeStrategy.
         src/overworld/OverworldSpriteType.cpp
         src/overworld/Tile.cpp
         src/overworld/TileAnimation.cpp
-        src/common/graphics/SpriteSheetLoader.cpp)
+        src/common/graphics/SpriteSheetLoader.cpp
+        src/town/TownScreen.cpp src/town/TownScreen.h
+        src/town/TownSpriteType.cpp src/town/TownSpriteType.h
+        src/town/TownSpriteTypeLoader.cpp src/town/TownSpriteTypeLoader.h
+        src/town/Town.cpp src/town/Town.h
+        src/town/TownManager.cpp src/town/TownManager.h
+        src/town/TownTile.cpp src/town/TownTile.h
+        )
 
 target_link_libraries(open_ultima PRIVATE SDL2::SDL2 SDL2::SDL2main)
 target_link_libraries(open_ultima PRIVATE SDL2::SDL2_image)

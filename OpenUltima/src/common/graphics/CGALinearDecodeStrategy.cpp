@@ -26,7 +26,10 @@ uint32_t CGALinearDecodeStrategy::GetPixel(int colorData) {
 }
 
 int OpenUltima::CGALinearDecodeStrategy::getBytesPerTile() {
-    return 64;
+    constexpr int pixelsPerByte = 4;
+    int bytesPerRow = _tileWidth / pixelsPerByte;
+
+    return bytesPerRow * _tileHeight;
 }
 
 vector<uint32_t> OpenUltima::CGALinearDecodeStrategy::GetPixels(vector<uint8_t> bytes) {

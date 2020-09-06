@@ -21,7 +21,6 @@ namespace OpenUltima {
             _box.y = y;
         }
 
-        shared_ptr<TileAnimation> getTileAnimation() { return _tileAnimation; };
     private:
         static constexpr int TILE_WIDTH = 16;
         static constexpr int TILE_HEIGHT = 16;

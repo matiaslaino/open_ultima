@@ -72,7 +72,11 @@ uint32_t EGARowPlanarDecodeStrategy::GetPixel(int colorData) {
 }
 
 int OpenUltima::EGARowPlanarDecodeStrategy::getBytesPerTile() {
-    return 128;
+    constexpr int planes = 4;
+    int bytesPerColorPlane = _tileWidth / 8;
+    int bytesPerRow = bytesPerColorPlane * planes;
+
+    return bytesPerRow * _tileHeight;
 }
 
 vector<uint32_t> OpenUltima::EGARowPlanarDecodeStrategy::GetPixels(vector<uint8_t> bytes) {
@@ -82,7 +86,7 @@ vector<uint32_t> OpenUltima::EGARowPlanarDecodeStrategy::GetPixels(vector<uint8_
         A plane is either blue / green / red or intensity, with the information from all the planes you can draw the correct color.
         A pure red pixel will just have a "1" on the red plane, and 0s on the rest of the planes. Intensity just makes it brighter or dimmer.
         Each sprite is coded in sequence, and this format will save the sprite pixel information (all planes) row per row.
-        So if a sprite is 16 pixels wide (each row is 16 px long), then EGA row-planar will use 2 whole byte for the blue information for the first 16 bits.
+        So if a sprite is 16 pixels wide (each row is 16 px long), then EGA row-planar will use 2 whole bytes for the blue information for the first 16 bits.
         After the blue color, we will have 2 more bytes for red, 2 more bytes for green, and 2 more for intensity.
         This means in total it will use 2(bytes)x4(planes) = 8 bytes per each of the sprite's rows.
         If our sprite is 16x16, that's 16 rows, then it will take 8 (bytes per row) x 16 (rows) = 128 bytes per sprite.
@@ -108,8 +112,7 @@ vector<uint32_t> OpenUltima::EGARowPlanarDecodeStrategy::GetPixels(vector<uint8_
     int componentIndex = -1;
     int byteIndex = -1;
 
-    //const int bytesPerPlane = box.w / 8;
-    const int bytesPerPlane = 2;
+    const int bytesPerPlane = _tileWidth / 8;
 
     for (auto byte : bytes) {
         byteIndex++;
@@ -132,7 +135,7 @@ vector<uint32_t> OpenUltima::EGARowPlanarDecodeStrategy::GetPixels(vector<uint8_
     }
 
 
-    for (auto i = 0; i < 256; i++) {
+    for (auto i = 0; i < _tileWidth * _tileHeight; i++) {
         int paletteIndex = blue[i] + green[i] * 2 + red[i] * 4 + intensity[i] * 8;
         auto pixel = GetPixel(paletteIndex);
         pixels.push_back(pixel);
