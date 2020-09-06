@@ -11,7 +11,7 @@ class GameContext {
 public:
     explicit GameContext(shared_ptr<Player> player) : _player(std::move(player)) {}
 
-    void enterDungeon();
+    void setScreen(ScreenType screenType) { _currentScreen = screenType; }
 
     ScreenType getCurrentScreen() { return _currentScreen; }
 

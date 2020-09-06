@@ -62,6 +62,9 @@ private:
 
     void move(int deltaX, int deltaY);
 
-    void enterDungeon();
+    void enterPlace();
+
+    static int getTileOffsetFromPositionInPixels(int xPx, int yPx);
+    static int getTileOffset(int x, int y);
 };
 

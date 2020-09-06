@@ -17,7 +17,6 @@ add_executable(open_ultima main.cpp src/common/graphics/CGALinearDecodeStrategy.
         src/common/graphics/EGARowPlanarDecodeStrategy.cpp
         src/CommandDisplay.cpp
         src/DungeonScreen.cpp
-        src/GameContext.cpp
         src/Player.cpp
         src/PlayerStatusDisplay.cpp
         src/Screen.cpp

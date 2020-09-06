@@ -6,7 +6,8 @@
 #include "../common/Fonts.h"
 #include "../CommandDisplay.h"
 
-void OverworldScreen::init(SDL_Renderer *renderer, PixelDecodeStrategy *pixelDecodeStrategy, const string &tilesFsPath) {
+void
+OverworldScreen::init(SDL_Renderer *renderer, PixelDecodeStrategy *pixelDecodeStrategy, const string &tilesFsPath) {
     _tiles.clear();
     _spritesMap.clear();
 
@@ -73,9 +74,9 @@ void OverworldScreen::init(SDL_Renderer *renderer, PixelDecodeStrategy *pixelDec
     }
 
     _playerTile = make_shared<OverworldTile>(toPixels(_gameContext->getPlayer()->getOverworldX()),
-                                    toPixels(_gameContext->getPlayer()->getOverworldY()),
-                                    _spritesMap.find(OverworldSpriteType::SpriteType::PLAYER)->second,
-                                    defaultSharedAnimation);
+                                             toPixels(_gameContext->getPlayer()->getOverworldY()),
+                                             _spritesMap.find(OverworldSpriteType::SpriteType::PLAYER)->second,
+                                             defaultSharedAnimation);
 
     delete[] buffer;
 }
@@ -126,8 +127,26 @@ void OverworldScreen::move(int deltaX, int deltaY) {
     setCamera();
 }
 
-void OverworldScreen::enterDungeon() {
-    _gameContext->enterDungeon();
+void OverworldScreen::enterPlace() {
+    // What's on the player's tile?
+    int x = _gameContext->getPlayer()->getOverworldX();
+    int y = _gameContext->getPlayer()->getOverworldY();
+
+    auto currentTile = _tiles[getTileOffset(x, y)];
+
+    auto currentTileType = currentTile->getSpriteType();
+
+    switch (currentTileType) {
+        case OverworldSpriteType::SpriteType::CASTLE:
+        case OverworldSpriteType::SpriteType::TOWN:
+            _gameContext->setScreen(ScreenType::Town);
+            break;
+        case OverworldSpriteType::SpriteType::DUNGEON_ENTRANCE:
+            _gameContext->setScreen(ScreenType::Dungeon);
+            break;
+        default:
+            break;
+    }
 }
 
 void OverworldScreen::handle(const SDL_Event &event) {
@@ -148,7 +167,7 @@ void OverworldScreen::handle(const SDL_Event &event) {
                 move(1, 0);
                 break;
             case SDLK_e:
-                enterDungeon();
+                enterPlace();
                 break;
         }
     }
@@ -164,10 +183,12 @@ void OverworldScreen::setCamera() {
     // make sure the camera doesn't show where the world ends!
     if (_camera.x < 0) _camera.x = 0;
     if (_camera.y < 0) _camera.y = 0;
-    if (_camera.x + toPixels(DISPLAY_SIZE_TILES_WIDTH) > cameraBoundX) _camera.x = cameraBoundX -
-                                                                                   toPixels(DISPLAY_SIZE_TILES_WIDTH);
-    if (_camera.y + toPixels(DISPLAY_SIZE_TILES_HEIGHT) > cameraBoundY) _camera.y = cameraBoundY -
-                                                                                    toPixels(DISPLAY_SIZE_TILES_HEIGHT);
+    if (_camera.x + toPixels(DISPLAY_SIZE_TILES_WIDTH) > cameraBoundX)
+        _camera.x = cameraBoundX -
+                    toPixels(DISPLAY_SIZE_TILES_WIDTH);
+    if (_camera.y + toPixels(DISPLAY_SIZE_TILES_HEIGHT) > cameraBoundY)
+        _camera.y = cameraBoundY -
+                    toPixels(DISPLAY_SIZE_TILES_HEIGHT);
 }
 
 int OverworldScreen::toPixels(int tiles) {
@@ -178,8 +199,8 @@ int OverworldScreen::toTiles(int pixels) {
     return pixels / TILE_WIDTH;
 }
 
-void OverworldScreen::executeOnVisibleTiles(const function<void(OverworldTile *)>& func) {
-    int tileStartOffset = toTiles(_camera.y) * TILES_PER_ROW + toTiles(_camera.x);
+void OverworldScreen::executeOnVisibleTiles(const function<void(OverworldTile *)> &func) {
+    int tileStartOffset = getTileOffsetFromPositionInPixels(_camera.x, _camera.y);
     int offset = tileStartOffset;
 
     for (int y = 0; y < DISPLAY_SIZE_TILES_HEIGHT; y++) {
@@ -231,4 +252,12 @@ OverworldSpriteType::SpriteType OverworldScreen::getSpriteType(int tileTypeId) {
     }
 
     throw "Error!";
+}
+
+int OverworldScreen::getTileOffsetFromPositionInPixels(int xPx, int yPx) {
+    return getTileOffset(toTiles(xPx), toTiles(yPx));
+}
+
+int OverworldScreen::getTileOffset(int x, int y) {
+    return y * TILES_PER_ROW + x;
 }

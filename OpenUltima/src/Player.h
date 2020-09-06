@@ -48,6 +48,8 @@ private:
     int _dungeonX = 2;
     int _dungeonLevel = 0;
     CardinalPoint _dungeonOrientation = CardinalPoint::South;
+    int _townX = 0;
+    int _townY = 0;
 
     int _hp = 150;
     int _food = 200;
