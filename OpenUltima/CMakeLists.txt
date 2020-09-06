@@ -28,9 +28,9 @@ add_executable(open_ultima main.cpp src/common/graphics/CGALinearDecodeStrategy.
         src/common/LTimer.cpp
         src/dungeon/Door.cpp
         src/dungeon/Dungeon.cpp
-        src/overworld/Overworld.cpp
+        src/overworld/OverworldScreen.cpp
         src/overworld/OverworldSpriteType.cpp
-        src/overworld/Tile.cpp
+        src/overworld/OverworldTile.cpp
         src/overworld/TileAnimation.cpp
         src/common/graphics/SpriteSheetLoader.cpp
         src/town/TownScreen.cpp src/town/TownScreen.h
@@ -39,7 +39,7 @@ add_executable(open_ultima main.cpp src/common/graphics/CGALinearDecodeStrategy.
         src/town/Town.cpp src/town/Town.h
         src/town/TownManager.cpp src/town/TownManager.h
         src/town/TownTile.cpp src/town/TownTile.h
-        )
+        src/common/Tile.cpp src/common/Tile.h)
 
 target_link_libraries(open_ultima PRIVATE SDL2::SDL2 SDL2::SDL2main)
 target_link_libraries(open_ultima PRIVATE SDL2::SDL2_image)

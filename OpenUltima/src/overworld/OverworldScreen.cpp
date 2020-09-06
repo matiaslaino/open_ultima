@@ -1,4 +1,4 @@
-#include "Overworld.h"
+#include "OverworldScreen.h"
 #include "TileTypeLoader.h"
 #include "../common/graphics/PixelDecodeStrategy.h"
 #include "Constants.h"
@@ -6,7 +6,7 @@
 #include "../common/Fonts.h"
 #include "../CommandDisplay.h"
 
-void Overworld::init(SDL_Renderer *renderer, PixelDecodeStrategy *pixelDecodeStrategy, const string &tilesFsPath) {
+void OverworldScreen::init(SDL_Renderer *renderer, PixelDecodeStrategy *pixelDecodeStrategy, const string &tilesFsPath) {
     _tiles.clear();
     _spritesMap.clear();
 
@@ -63,16 +63,16 @@ void Overworld::init(SDL_Renderer *renderer, PixelDecodeStrategy *pixelDecodeStr
         // water tiles share the same scrolling animation instance so they all animate at the same time
         auto animation = sprite1->getAnimationType() == TileAnimation::AnimationType::SCROLLING ? defaultSharedAnimation
                                                                                                 : make_shared<TileAnimation>();
-        auto tile1 = make_shared<Tile>(toPixels(x1), toPixels(y1), sprite1, animation);
+        auto tile1 = make_shared<OverworldTile>(toPixels(x1), toPixels(y1), sprite1, animation);
         _tiles.push_back(tile1);
 
         animation = sprite2->getAnimationType() == TileAnimation::AnimationType::SCROLLING ? defaultSharedAnimation
                                                                                            : make_shared<TileAnimation>();
-        auto tile2 = make_shared<Tile>(toPixels(x2), toPixels(y2), sprite2, animation);
+        auto tile2 = make_shared<OverworldTile>(toPixels(x2), toPixels(y2), sprite2, animation);
         _tiles.push_back(tile2);
     }
 
-    _playerTile = make_shared<Tile>(toPixels(_gameContext->getPlayer()->getOverworldX()),
+    _playerTile = make_shared<OverworldTile>(toPixels(_gameContext->getPlayer()->getOverworldX()),
                                     toPixels(_gameContext->getPlayer()->getOverworldY()),
                                     _spritesMap.find(OverworldSpriteType::SpriteType::PLAYER)->second,
                                     defaultSharedAnimation);
@@ -80,14 +80,14 @@ void Overworld::init(SDL_Renderer *renderer, PixelDecodeStrategy *pixelDecodeStr
     delete[] buffer;
 }
 
-void Overworld::update(float elapsed) {
+void OverworldScreen::update(float elapsed) {
     // scrolling animation (water) needs to be animated on its own.
     TileAnimation::updateScrolling(elapsed);
 
-    executeOnVisibleTiles([elapsed](Tile *tile) -> void { tile->update(elapsed); });
+    executeOnVisibleTiles([elapsed](OverworldTile *tile) -> void { tile->update(elapsed); });
 }
 
-void Overworld::draw(SDL_Renderer *renderer) {
+void OverworldScreen::draw(SDL_Renderer *renderer) {
     // why do i need to declare a variable for a capture? fuck!
     auto camera = _camera;
 
@@ -97,7 +97,7 @@ void Overworld::draw(SDL_Renderer *renderer) {
     _playerTile->draw(renderer, camera);
 }
 
-void Overworld::move(int deltaX, int deltaY) {
+void OverworldScreen::move(int deltaX, int deltaY) {
     int playerX = _gameContext->getPlayer()->getOverworldX() + deltaX;
     int playerY = _gameContext->getPlayer()->getOverworldY() + deltaY;
 
@@ -126,11 +126,11 @@ void Overworld::move(int deltaX, int deltaY) {
     setCamera();
 }
 
-void Overworld::enterDungeon() {
+void OverworldScreen::enterDungeon() {
     _gameContext->enterDungeon();
 }
 
-void Overworld::handle(const SDL_Event &event) {
+void OverworldScreen::handle(const SDL_Event &event) {
     if (event.type == SDL_KEYDOWN) {
         auto pressedKey = event.key.keysym.sym;
 
@@ -154,7 +154,7 @@ void Overworld::handle(const SDL_Event &event) {
     }
 }
 
-void Overworld::setCamera() {
+void OverworldScreen::setCamera() {
     _camera.x = toPixels(_gameContext->getPlayer()->getOverworldX() - (DISPLAY_SIZE_TILES_WIDTH - 1) / 2);
     _camera.y = toPixels(_gameContext->getPlayer()->getOverworldY() - (DISPLAY_SIZE_TILES_HEIGHT - 1) / 2);
 
@@ -170,15 +170,15 @@ void Overworld::setCamera() {
                                                                                     toPixels(DISPLAY_SIZE_TILES_HEIGHT);
 }
 
-int Overworld::toPixels(int tiles) {
+int OverworldScreen::toPixels(int tiles) {
     return tiles * TILE_WIDTH;
 }
 
-int Overworld::toTiles(int pixels) {
+int OverworldScreen::toTiles(int pixels) {
     return pixels / TILE_WIDTH;
 }
 
-void Overworld::executeOnVisibleTiles(const function<void(Tile *)>& func) {
+void OverworldScreen::executeOnVisibleTiles(const function<void(OverworldTile *)>& func) {
     int tileStartOffset = toTiles(_camera.y) * TILES_PER_ROW + toTiles(_camera.x);
     int offset = tileStartOffset;
 
@@ -194,7 +194,7 @@ void Overworld::executeOnVisibleTiles(const function<void(Tile *)>& func) {
     }
 }
 
-OverworldSpriteType::SpriteType Overworld::getSpriteType(int tileTypeId) {
+OverworldSpriteType::SpriteType OverworldScreen::getSpriteType(int tileTypeId) {
     switch (tileTypeId) {
         case 0: {
             return OverworldSpriteType::SpriteType::WATER;

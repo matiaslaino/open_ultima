@@ -3,7 +3,7 @@
 #include "../GameObject.h"
 #include <utility>
 #include <vector>
-#include "Tile.h"
+#include "OverworldTile.h"
 #include "OverworldSpriteType.h"
 #include "../Player.h"
 #include "Constants.h"
@@ -14,16 +14,15 @@
 #include "../Screen.h"
 
 using namespace std;
-using namespace OpenUltima;
 
-class Overworld : public Screen {
+class OverworldScreen : public Screen {
 public:
     static constexpr int DISPLAY_SIZE_TILES_WIDTH = 19;
     static constexpr int DISPLAY_SIZE_TILES_HEIGHT = 9;
     static constexpr int MAP_WIDTH_PX = DISPLAY_SIZE_TILES_WIDTH * TILE_WIDTH;
     static constexpr int MAP_HEIGHT_PX = DISPLAY_SIZE_TILES_HEIGHT * TILE_WIDTH;
 
-    Overworld(shared_ptr<GameContext> context, int widthTiles, int heightTiles) : Screen(std::move(context)) {
+    OverworldScreen(shared_ptr<GameContext> context, int widthTiles, int heightTiles) : Screen(std::move(context)) {
         _camera.w = DISPLAY_SIZE_TILES_WIDTH * TILE_WIDTH;
         _camera.h = DISPLAY_SIZE_TILES_HEIGHT * TILE_HEIGHT;
 
@@ -48,8 +47,8 @@ private:
 
     static OverworldSpriteType::SpriteType getSpriteType(int tileTypeId);
 
-    shared_ptr<Tile> _playerTile;
-    vector<shared_ptr<Tile>> _tiles;
+    shared_ptr<OverworldTile> _playerTile;
+    vector<shared_ptr<OverworldTile>> _tiles;
     SDL_Rect _camera;
     map<OverworldSpriteType::SpriteType, shared_ptr<OverworldSpriteType>> _spritesMap;
 
@@ -59,7 +58,7 @@ private:
 
     static int toTiles(int pixels);
 
-    void executeOnVisibleTiles(const function<void(Tile *)> &);
+    void executeOnVisibleTiles(const function<void(OverworldTile *)> &);
 
     void move(int deltaX, int deltaY);
 

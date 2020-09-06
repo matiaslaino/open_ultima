@@ -1,12 +1,12 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <cstdio>
-#include "src/overworld/Tile.h"
+#include "src/overworld/OverworldTile.h"
 #include "src/common/graphics/CGALinearDecodeStrategy.h"
 #include "src/common/graphics/EGARowPlanarDecodeStrategy.h"
 #include <memory>
 #include "src/common/LTimer.h"
-#include "src/overworld/Overworld.h"
+#include "src/overworld/OverworldScreen.h"
 #include "src/common/Fonts.h"
 #include "src/Constants.h"
 #include "src/CommandDisplay.h"
@@ -126,7 +126,7 @@ int main(int argc, char *args[]) {
 
             auto player = make_shared<Player>(20, 20);
             auto gameContext = make_shared<GameContext>(player);
-            auto overworldScreen = make_shared<Overworld>(gameContext, 19, 9);
+            auto overworldScreen = make_shared<OverworldScreen>(gameContext, 19, 9);
             auto dungeonScreen = make_shared<DungeonScreen>(gameContext);
 
             auto egaTilesPath = "F:\\GOGLibrary\\Ultima 1\\EGATILES.BIN";
@@ -161,7 +161,6 @@ int main(int argc, char *args[]) {
             dungeon->randomize();
             dungeonScreen->setDungeon(dungeon);
 
-
             shared_ptr<Screen> currentScreen = static_pointer_cast<Screen>(overworldScreen);
 
             //While application is running
@@ -177,7 +176,8 @@ int main(int argc, char *args[]) {
                             if (pressedKey == SDLK_PAGEDOWN) {
                                 usingEga = !usingEga;
                                 if (usingEga) {
-                                    overworldScreen->init(gRenderer, make_unique<EGARowPlanarDecodeStrategy>(16, 16).get(),
+                                    overworldScreen->init(gRenderer,
+                                                          make_unique<EGARowPlanarDecodeStrategy>(16, 16).get(),
                                                           egaTilesPath);
                                 } else {
                                     overworldScreen->init(gRenderer, make_unique<CGALinearDecodeStrategy>(16, 16).get(),
@@ -200,20 +200,25 @@ int main(int argc, char *args[]) {
                 SDL_SetRenderDrawColor(gRenderer, 0, 0, 0xAF, 0);
                 SDL_RenderClear(gRenderer);
 
-                if (gameContext->getCurrentScreen() == ScreenType::Overworld) {
-                    currentScreen = static_pointer_cast<Screen>(overworldScreen);
-                } else {
-                    currentScreen = static_pointer_cast<Screen>(dungeonScreen);
+                switch (gameContext->getCurrentScreen()) {
+                    case ScreenType::Overworld:
+                        currentScreen = static_pointer_cast<Screen>(overworldScreen);
+                        break;
+                    case ScreenType::Dungeon:
+                        currentScreen = static_pointer_cast<Screen>(dungeonScreen);
+                        break;
+                    case ScreenType::Town:
+                        currentScreen = static_pointer_cast<Screen>(townScreen);
+                        break;
+                    case ScreenType::Space:
+                        throw exception("Unhandled");
                 }
 
                 currentScreen->update(timeStep);
 
-
-                overworldScreen->update(timeStep);
-
-                int mapViewPadding = (GAME_VIEW_WIDTH - Overworld::MAP_WIDTH_PX) / 2;
-                SDL_Rect mapViewport = {mapViewPadding, mapViewPadding, Overworld::MAP_WIDTH_PX,
-                                        Overworld::MAP_HEIGHT_PX};
+                int mapViewPadding = (GAME_VIEW_WIDTH - OverworldScreen::MAP_WIDTH_PX) / 2;
+                SDL_Rect mapViewport = {mapViewPadding, mapViewPadding, OverworldScreen::MAP_WIDTH_PX,
+                                        OverworldScreen::MAP_HEIGHT_PX};
                 SDL_RenderSetViewport(gRenderer, &mapViewport);
 
                 currentScreen->draw(gRenderer);
