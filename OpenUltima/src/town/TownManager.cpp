@@ -23,7 +23,7 @@ void TownManager::init(const shared_ptr<TownSpriteTypeLoader> &spriteTypeLoader,
 
             auto tile = make_shared<TownTile>(x * TownSpriteType::SPRITE_SIZE, y * TownSpriteType::SPRITE_SIZE, sprite);
             tiles.push_back(tile);
-            // tiles are stored top to botton, left to right
+            // tiles are stored top to bottom, left to right
             y++;
             if (y == 18) {
                 y = 0;

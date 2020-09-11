@@ -21,6 +21,8 @@ public:
     virtual void handle(const SDL_Event &e) {}
 
 protected:
+    static constexpr int MAIN_VIEWPORT_PADDING = 8;
+
     shared_ptr<GameContext> _gameContext;
 
     static void clearScreen(SDL_Renderer *renderer);

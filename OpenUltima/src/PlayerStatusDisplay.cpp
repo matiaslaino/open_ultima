@@ -5,8 +5,8 @@
 #include "common/Colors.h"
 
 PlayerStatusDisplay::PlayerStatusDisplay(SDL_Renderer *renderer, shared_ptr<Player> player) {
-    _textureHits = make_unique<LTexture>();
-    _textureFood = make_unique<LTexture>();
+    _textureLine1 = make_unique<LTexture>();
+    _textureLine2 = make_unique<LTexture>();
     _textureXP = make_unique<LTexture>();
     _textureMoney = make_unique<LTexture>();
     _background = make_unique<LTexture>();
@@ -15,16 +15,17 @@ PlayerStatusDisplay::PlayerStatusDisplay(SDL_Renderer *renderer, shared_ptr<Play
     _player = std::move(player);
 }
 
-void PlayerStatusDisplay::update(float elapsed) {
-}
-
 void PlayerStatusDisplay::draw(SDL_Renderer *renderer) {
+    SDL_Rect viewport = {PlayerStatusDisplay::POSITION_X, PlayerStatusDisplay::POSITION_Y,
+                         PlayerStatusDisplay::WIDTH, PlayerStatusDisplay::HEIGHT};
+    SDL_RenderSetViewport(renderer, &viewport);
+
     _background->render(renderer, 0, 0);
 
-    _textureHits->loadFromRenderedText(Fonts::standard(), renderer, "Hits: " + to_string(_player->getHP()),
-                                       Colors::TEXT_COLOR);
-    _textureFood->loadFromRenderedText(Fonts::standard(), renderer, "Food: " + to_string(_player->getFood()),
-                                       Colors::TEXT_COLOR);
+    _textureLine1->loadFromRenderedText(Fonts::standard(), renderer, "Hits: " + to_string(_player->getHP()),
+                                        Colors::TEXT_COLOR);
+    _textureLine2->loadFromRenderedText(Fonts::standard(), renderer, "Food: " + to_string(_player->getFood()),
+                                        Colors::TEXT_COLOR);
     _textureXP->loadFromRenderedText(Fonts::standard(), renderer, "Exp.: " + to_string(_player->getXP()),
                                      Colors::TEXT_COLOR);
     _textureMoney->loadFromRenderedText(Fonts::standard(), renderer, "Coin: " + to_string(_player->getMoney()),
@@ -35,9 +36,9 @@ void PlayerStatusDisplay::draw(SDL_Renderer *renderer) {
     constexpr int PADDING_TOP = 6;
 
     int offset = 0;
-    _textureHits->render(renderer, PADDING_LEFT, PADDING_TOP);
+    _textureLine1->render(renderer, PADDING_LEFT, PADDING_TOP);
     offset += LINE_HEIGHT;
-    _textureFood->render(renderer, PADDING_LEFT, PADDING_TOP + offset);
+    _textureLine2->render(renderer, PADDING_LEFT, PADDING_TOP + offset);
     offset += LINE_HEIGHT;
     _textureXP->render(renderer, PADDING_LEFT, PADDING_TOP + offset);
     offset += LINE_HEIGHT;

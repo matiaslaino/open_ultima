@@ -8,11 +8,11 @@ using namespace std;
 
 struct VisibleDungeonSpace {
 public:
-    VisibleDungeonSpace(DungeonFeature feature_, shared_ptr<VisibleDungeonSpace> left_,
-                        shared_ptr<VisibleDungeonSpace> right_) : feature(feature_), left(std::move(left_)),
-                                                                  right(std::move(right_)) {}
+    VisibleDungeonSpace(DungeonFeature feature_, DungeonFeature left_,
+                        DungeonFeature right_) : feature(feature_), left(left_),
+                                                 right(right_) {}
 
     DungeonFeature feature;
-    shared_ptr<VisibleDungeonSpace> left;
-    shared_ptr<VisibleDungeonSpace> right;
+    DungeonFeature left;
+    DungeonFeature right;
 };

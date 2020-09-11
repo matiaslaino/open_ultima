@@ -10,7 +10,7 @@
 #include "src/common/Fonts.h"
 #include "src/Constants.h"
 #include "src/CommandDisplay.h"
-#include "src/DungeonScreen.h"
+#include "src/dungeon/DungeonScreen.h"
 #include "src/town/TownManager.h"
 #include "src/town/TownScreen.h"
 #include "src/town/TownSpriteTypeLoader.h"
@@ -217,16 +217,11 @@ int main(int argc, char *args[]) {
 
                 currentScreen->update(timeStep);
 
-                int mapViewPadding = (GAME_VIEW_WIDTH - OverworldScreen::MAP_WIDTH_PX) / 2;
-                SDL_Rect mapViewport = {mapViewPadding, mapViewPadding, OverworldScreen::MAP_WIDTH_PX,
-                                        OverworldScreen::MAP_HEIGHT_PX};
-                SDL_RenderSetViewport(gRenderer, &mapViewport);
+                SDL_Rect defaultViewport = {0, 0, 320, 200};
+                SDL_RenderSetViewport(gRenderer, &defaultViewport);
 
                 currentScreen->draw(gRenderer);
 
-                SDL_Rect viewport = {PlayerStatusDisplay::POSITION_X, PlayerStatusDisplay::POSITION_Y,
-                                     PlayerStatusDisplay::WIDTH, PlayerStatusDisplay::HEIGHT};
-                SDL_RenderSetViewport(gRenderer, &viewport);
                 _playerStatusDisplay->draw(gRenderer);
 
                 SDL_RenderSetViewport(gRenderer, &commandDisplayBox);

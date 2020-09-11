@@ -16,7 +16,7 @@ find_package(sdl2-ttf CONFIG REQUIRED)
 add_executable(open_ultima main.cpp src/common/graphics/CGALinearDecodeStrategy.cpp
         src/common/graphics/EGARowPlanarDecodeStrategy.cpp
         src/CommandDisplay.cpp
-        src/DungeonScreen.cpp
+        src/dungeon/DungeonScreen.cpp
         src/Player.cpp
         src/PlayerStatusDisplay.cpp
         src/Screen.cpp

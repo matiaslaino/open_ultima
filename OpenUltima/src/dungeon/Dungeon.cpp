@@ -1,93 +1,144 @@
 #include "Dungeon.h"
 #include "DungeonFeature.h"
 
-void Dungeon::randomize()
-{
-	vector<vector<DungeonFeature>> levelColumns = { 
-		{DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None},
-		{DungeonFeature::Door, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Door, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall},
-		{DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None},
-		{DungeonFeature::Door, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Door, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall},
-		{DungeonFeature::Door, DungeonFeature::None, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall},
-		{DungeonFeature::Door, DungeonFeature::None, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall},
-		{DungeonFeature::Door, DungeonFeature::None, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall},
-		{DungeonFeature::Door, DungeonFeature::None, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall},
-		{DungeonFeature::Door, DungeonFeature::None, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall},
-	};
-	_levels.push_back(levelColumns);
+void Dungeon::randomize() {
+    vector<vector<DungeonFeature>> levelColumns = {
+            {DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None},
+            {DungeonFeature::Door, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Door, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall},
+            {DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None},
+            {DungeonFeature::Door, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Door, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall},
+            {DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None},
+            {DungeonFeature::Door, DungeonFeature::None, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall},
+            {DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None},
+            {DungeonFeature::Door, DungeonFeature::None, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall},
+            {DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None},
+    };
+    _levels.push_back(levelColumns);
 
-	/*for (int level = 0; level < MAX_LEVEL; level++) {
+    /*for (int level = 0; level < MAX_LEVEL; level++) {
 
-	}*/
+    }*/
 }
 
-vector<VisibleDungeonSpace> Dungeon::getVisible(int level, int x, int y, CardinalPoint viewDirection)
-{
-	auto levelFeatures = _levels[level];
-	vector<VisibleDungeonSpace> visibleSpaces;
-	int i = 0;
-	bool wall = false;
+DungeonFeature Dungeon::lookLeftFromEast(vector<vector<DungeonFeature>> levelFeatures, int x, int y) {
+    return y == 0 ? DungeonFeature::Wall : levelFeatures[x][y - 1];
+}
 
-	switch (viewDirection) {
-	case CardinalPoint::East:
-		while (i < MAX_VISIBILITY && !wall) {
-			auto cellIndex = x + i;
+DungeonFeature Dungeon::lookRightFromEast(vector<vector<DungeonFeature>> levelFeatures, int x, int y) {
+    return y == SIZE - 1 ? DungeonFeature::Wall : levelFeatures[x][y + 1];
+}
 
-			auto cellFeature = cellIndex == SIZE ? DungeonFeature::Wall : levelFeatures[cellIndex][y];
-			if (isWalledFeature(cellFeature)) wall = true;
+DungeonFeature Dungeon::lookLeftFromWest(vector<vector<DungeonFeature>> levelFeatures, int x, int y) {
+    return y == SIZE - 1 ? DungeonFeature::Wall : levelFeatures[x][y + 1];
+}
 
-			auto leftFeature = wall || y == 0 ? DungeonFeature::Wall : levelFeatures[cellIndex][y - 1];
-			auto rightFeature = wall || y == SIZE - 1 ? DungeonFeature::Wall : levelFeatures[cellIndex][y + 1];
-			auto dungeonSpace = VisibleDungeonSpace(cellFeature, make_shared<VisibleDungeonSpace>(leftFeature, nullptr, nullptr), make_shared<VisibleDungeonSpace>(rightFeature, nullptr, nullptr));
+DungeonFeature Dungeon::lookRightFromWest(vector<vector<DungeonFeature>> levelFeatures, int x, int y) {
+    return y == 0 ? DungeonFeature::Wall : levelFeatures[x][y - 1];
+}
 
-			visibleSpaces.push_back(dungeonSpace);
-			i++;
-		}
-		break;
-	case CardinalPoint::West: {
-		while (i < MAX_VISIBILITY && !wall) {
-			auto cellIndex = x - i;
-			auto cellFeature = cellIndex == -1 ? DungeonFeature::Wall : levelFeatures[cellIndex][y];
-			if (isWalledFeature(cellFeature)) wall = true;
+DungeonFeature Dungeon::lookLeftFromNorth(vector<vector<DungeonFeature>> levelFeatures, int x, int y) {
+    return x == 0 ? DungeonFeature::Wall : levelFeatures[x - 1][y];
+}
 
-			auto leftFeature = wall || y == SIZE - 1 ? DungeonFeature::Wall : levelFeatures[cellIndex][y + 1];
-			auto rightFeature = wall || y == 0 ? DungeonFeature::Wall : levelFeatures[cellIndex][y - 1];
-			auto dungeonSpace = VisibleDungeonSpace(cellFeature, make_shared<VisibleDungeonSpace>(leftFeature, nullptr, nullptr), make_shared<VisibleDungeonSpace>(rightFeature, nullptr, nullptr));
+DungeonFeature Dungeon::lookRightFromNorth(vector<vector<DungeonFeature>> levelFeatures, int x, int y) {
+    return x == SIZE - 1 ? DungeonFeature::Wall : levelFeatures[x + 1][y];
+}
 
-			visibleSpaces.push_back(dungeonSpace);
-			i++;
-		}
-		break;
-	}
-	case CardinalPoint::North: {
-		while (i < MAX_VISIBILITY && !wall) {
-			auto cellIndex = y - i;
-			auto cellFeature = cellIndex == -1 ? DungeonFeature::Wall : levelFeatures[x][cellIndex];
-			if (isWalledFeature(cellFeature)) wall = true;
+DungeonFeature Dungeon::lookLeftFromSouth(vector<vector<DungeonFeature>> levelFeatures, int x, int y) {
+    return x == SIZE - 1 ? DungeonFeature::Wall : levelFeatures[x + 1][y];
+}
 
-			auto leftFeature = wall || x == 0 ? DungeonFeature::Wall : levelFeatures[x - 1][cellIndex];
-			auto rightFeature = wall || x == SIZE - 1 ? DungeonFeature::Wall : levelFeatures[x + 1][cellIndex];
-			auto dungeonSpace = VisibleDungeonSpace(cellFeature, make_shared<VisibleDungeonSpace>(leftFeature, nullptr, nullptr), make_shared<VisibleDungeonSpace>(rightFeature, nullptr, nullptr));
+DungeonFeature Dungeon::lookRightFromSouth(vector<vector<DungeonFeature>> levelFeatures, int x, int y) {
+    return x == 0 ? DungeonFeature::Wall : levelFeatures[x - 1][y];
+}
 
-			visibleSpaces.push_back(dungeonSpace);
-			i++;
-		}
-	} break;
-	case CardinalPoint::South:
-		while (i < MAX_VISIBILITY && !wall) {
-			auto cellIndex = y + i;
-			auto cellFeature = cellIndex == SIZE ? DungeonFeature::Wall : levelFeatures[x][cellIndex];
-			if (isWalledFeature(cellFeature)) wall = true;
+DungeonFeature Dungeon::lookLeft(vector<vector<DungeonFeature>> levelFeatures, int x, int y, CardinalPoint point) {
+    switch (point) {
+        case CardinalPoint::East:
+            return lookLeftFromEast(levelFeatures, x, y);
+        case CardinalPoint::West:
+            return lookLeftFromWest(levelFeatures, x, y);
+        case CardinalPoint::North:
+            return lookLeftFromNorth(levelFeatures, x, y);
+        case CardinalPoint::South:
+            return lookLeftFromSouth(levelFeatures, x, y);
+    }
+}
 
-			auto leftFeature = wall || x == SIZE - 1 ? DungeonFeature::Wall : levelFeatures[x + 1][cellIndex];
-			auto rightFeature = wall || x == 0 ? DungeonFeature::Wall : levelFeatures[x - 1][cellIndex];
-			auto dungeonSpace = VisibleDungeonSpace(cellFeature, make_shared<VisibleDungeonSpace>(leftFeature, nullptr, nullptr), make_shared<VisibleDungeonSpace>(rightFeature, nullptr, nullptr));
+DungeonFeature Dungeon::lookRight(vector<vector<DungeonFeature>> levelFeatures, int x, int y, CardinalPoint point) {
+    switch (point) {
+        case CardinalPoint::East:
+            return lookRightFromEast(levelFeatures, x, y);
+        case CardinalPoint::West:
+            return lookRightFromWest(levelFeatures, x, y);
+        case CardinalPoint::North:
+            return lookRightFromNorth(levelFeatures, x, y);
+        case CardinalPoint::South:
+            return lookRightFromSouth(levelFeatures, x, y);
+    }
+}
 
-			visibleSpaces.push_back(dungeonSpace);
-			i++;
-		}
-		break;
-	}
+vector<VisibleDungeonSpace> Dungeon::getVisible(int level, int x, int y, CardinalPoint viewDirection) {
+    auto levelFeatures = _levels[level];
+    vector<VisibleDungeonSpace> visibleSpaces;
+    int i = 1;
+    bool wall = false;
 
-	return visibleSpaces;
+    // Get the space we're in
+    auto dungeonSpace = VisibleDungeonSpace(levelFeatures[x][y],
+                                            lookLeft(levelFeatures, x, y, viewDirection),
+                                            lookRight(levelFeatures, x, y, viewDirection));
+    visibleSpaces.push_back(dungeonSpace);
+
+    while (i < MAX_VISIBILITY && !wall) {
+        int visibleTileX;
+        int visibleTileY;
+        bool outOfBounds = false;
+        switch (viewDirection) {
+            case CardinalPoint::East: {
+                visibleTileX = x + i;
+                visibleTileY = y;
+
+                outOfBounds = visibleTileX == SIZE;
+            }
+                break;
+            case CardinalPoint::West: {
+                visibleTileX = x - i;
+                visibleTileY = y;
+
+                outOfBounds = visibleTileX == -1;
+            }
+                break;
+            case CardinalPoint::North: {
+                visibleTileX = x;
+                visibleTileY = y - i;
+
+                outOfBounds = visibleTileY == -1;
+            }
+                break;
+            case CardinalPoint::South: {
+                visibleTileX = x;
+                visibleTileY = y + i;
+
+                outOfBounds = visibleTileY == SIZE;
+            }
+                break;
+        }
+
+        auto cellFeature = outOfBounds ? DungeonFeature::Wall : levelFeatures[visibleTileX][visibleTileY];
+        if (isWalledFeature(cellFeature)) wall = true;
+
+        auto leftFeature = wall ? DungeonFeature::Wall : lookLeft(levelFeatures, visibleTileX, visibleTileY,
+                                                                  viewDirection);
+        auto rightFeature = wall ? DungeonFeature::Wall : lookRight(levelFeatures, visibleTileX, visibleTileY,
+                                                                    viewDirection);
+        dungeonSpace = VisibleDungeonSpace(cellFeature,
+                                           leftFeature,
+                                           rightFeature);
+
+        visibleSpaces.push_back(dungeonSpace);
+        i++;
+    }
+
+    return visibleSpaces;
 }

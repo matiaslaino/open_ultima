@@ -1,12 +1,13 @@
 #include "TownScreen.h"
 
-#include <utility>
-
 void TownScreen::update(float elapsed) {
 
 }
 
 void TownScreen::draw(SDL_Renderer *renderer) {
+    SDL_Rect defaultViewport = {MAIN_VIEWPORT_PADDING, MAIN_VIEWPORT_PADDING, WIDTH, HEIGHT};
+    SDL_RenderSetViewport(renderer, &defaultViewport);
+
     clearScreen(renderer);
 
     auto tiles = _town->getTiles();
@@ -23,6 +24,8 @@ void TownScreen::handle(const SDL_Event &e) {
         switch (pressedKey) {
             case SDLK_e:
                 _gameContext->setScreen(ScreenType::Overworld);
+                break;
+            default:
                 break;
         }
     }

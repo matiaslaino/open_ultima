@@ -6,6 +6,7 @@
 #include "../common/Fonts.h"
 #include "../CommandDisplay.h"
 #include <iostream>
+#include "../common/ShapeUtils.h"
 
 void OverworldScreen::init(SDL_Renderer *renderer,
                            PixelDecodeStrategy *pixelDecodeStrategy, const string &tilesFsPath) {
@@ -102,6 +103,12 @@ void OverworldScreen::update(float elapsed) {
 }
 
 void OverworldScreen::draw(SDL_Renderer *renderer) {
+    ShapeUtils::drawFullBorders(renderer);
+
+    SDL_Rect mapViewPort = {Screen::MAIN_VIEWPORT_PADDING, Screen::MAIN_VIEWPORT_PADDING,
+                            Screen::WIDTH, Screen::HEIGHT};
+    SDL_RenderSetViewport(renderer, &mapViewPort);
+
     // why do i need to declare a variable for a capture? fuck!
     auto camera = _camera;
 
@@ -186,6 +193,8 @@ void OverworldScreen::handle(const SDL_Event &event) {
             case SDLK_e:
                 enterPlace();
                 break;
+            default:
+                return;
         }
     }
 }
@@ -237,38 +246,30 @@ OverworldSpriteType::SpriteType OverworldScreen::getSpriteType(int tileTypeId) {
         case 0: {
             return OverworldSpriteType::SpriteType::WATER;
         }
-            break;
         case 1: {
             return OverworldSpriteType::SpriteType::GRASS;
         }
-            break;
         case 2: {
             return OverworldSpriteType::SpriteType::FOREST;
         }
-            break;
         case 3: {
             return OverworldSpriteType::SpriteType::MOUNTAIN;
         }
-            break;
         case 4: {
             return OverworldSpriteType::SpriteType::CASTLE;
         }
-            break;
         case 5: {
             return OverworldSpriteType::SpriteType::SIGNPOST;
         }
-            break;
         case 6: {
             return OverworldSpriteType::SpriteType::TOWN;
         }
-            break;
         case 7: {
             return OverworldSpriteType::SpriteType::DUNGEON_ENTRANCE;
         }
-            break;
+        default:
+            throw exception("Unknown sprite type");
     }
-
-    throw "Error!";
 }
 
 int OverworldScreen::getTileOffsetFromPositionInPixels(int xPx, int yPx) {

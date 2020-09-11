@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Screen.h"
+#include "../Screen.h"
 
 #include <utility>
-#include "dungeon/Dungeon.h"
-#include "common/graphics/LTexture.h"
+#include "Dungeon.h"
+#include "../common/graphics/LTexture.h"
 
 class DungeonScreen : public Screen {
 public:
@@ -36,7 +36,7 @@ private:
 
     shared_ptr<Dungeon> _dungeon;
     vector<VisibleDungeonSpace> _vision;
-    int _drawCounter = 0;
+    float _drawCounter = 0;
     int _drawEnabled = true;
 
     void moveForward();
