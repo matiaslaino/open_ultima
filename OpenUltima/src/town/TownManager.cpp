@@ -21,7 +21,7 @@ void TownManager::init(const shared_ptr<TownSpriteTypeLoader> &spriteTypeLoader,
             auto spriteType = getTypeFromIndex(townPtr[j]);
             auto sprite = spriteTypeLoader->getSpriteType(spriteType);
 
-            auto tile = make_shared<TownTile>(x * TownSpriteType::SPRITE_SIZE, y * TownSpriteType::SPRITE_SIZE, sprite);
+            auto tile = make_shared<TownTile>(x, y, sprite);
             tiles.push_back(tile);
             // tiles are stored top to bottom, left to right
             y++;
@@ -31,7 +31,9 @@ void TownManager::init(const shared_ptr<TownSpriteTypeLoader> &spriteTypeLoader,
             }
         }
 
-        auto town = make_shared<Town>(townIndex++, tiles);
+        // The castles are indexes 0 and 1 in the map file.
+        auto isCastle = i <= 1;
+        auto town = make_shared<Town>(townIndex++, tiles, isCastle);
         _towns.push_back(town);
     }
 

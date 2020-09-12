@@ -14,7 +14,10 @@ TownTile::TownTile(int x, int y, shared_ptr<TownSpriteType> sprite) :
 void TownTile::draw(SDL_Renderer *renderer, SDL_Rect camera) {
     if (isVisible(camera)) {
         if (_sprite != nullptr) {
-            SDL_Rect adjustedRenderTargetQuad = {_box.x - camera.x, _box.y - camera.y,
+            auto xPx = _box.x * _box.w;
+            auto yPx = _box.y * _box.h;
+
+            SDL_Rect adjustedRenderTargetQuad = {xPx - camera.x, yPx - camera.y,
                                                  _box.w, _box.h};
             const auto source = _sprite->getSource();
             SDL_RenderCopyEx(renderer, _sprite->getTexture()->getRawTexture(), &source,

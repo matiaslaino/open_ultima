@@ -34,6 +34,14 @@ public:
 
     void dungeonMoveForward();
 
+    int getTownX() { return _townX; }
+
+    void setTownX(int value) { _townX = value; }
+
+    int getTownY() { return _townY; }
+
+    void setTownY(int value) { _townY = value; }
+
     int getHP() const { return _hp; };
 
     int getFood() const { return _food; };

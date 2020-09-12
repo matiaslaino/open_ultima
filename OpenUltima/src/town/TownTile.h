@@ -14,6 +14,8 @@ public:
 
     void draw(SDL_Renderer *renderer, SDL_Rect camera) override;
 
+    TownSpriteType::SpriteType getType() { return _sprite->getType(); }
+
 private:
     shared_ptr<TownSpriteType> _sprite;
 };

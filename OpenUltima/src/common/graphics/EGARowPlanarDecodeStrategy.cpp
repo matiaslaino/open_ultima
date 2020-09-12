@@ -1,7 +1,5 @@
 #include "EGARowPlanarDecodeStrategy.h"
 
-using namespace OpenUltima;
-
 uint32_t EGARowPlanarDecodeStrategy::GetPixel(int colorData) {
     // EGA palette is 16 colors only.
     switch (colorData) {
@@ -71,7 +69,7 @@ uint32_t EGARowPlanarDecodeStrategy::GetPixel(int colorData) {
     }
 }
 
-int OpenUltima::EGARowPlanarDecodeStrategy::getBytesPerTile() {
+int EGARowPlanarDecodeStrategy::getBytesPerTile() {
     constexpr int planes = 4;
     int bytesPerColorPlane = _tileWidth / 8;
     int bytesPerRow = bytesPerColorPlane * planes;
@@ -79,7 +77,7 @@ int OpenUltima::EGARowPlanarDecodeStrategy::getBytesPerTile() {
     return bytesPerRow * _tileHeight;
 }
 
-vector<uint32_t> OpenUltima::EGARowPlanarDecodeStrategy::GetPixels(vector<uint8_t> bytes) {
+vector<uint32_t> EGARowPlanarDecodeStrategy::GetPixels(vector<uint8_t> bytes) {
     vector<uint32_t> pixels;
     /*
         EGA row-planar stores pixel color information coded in "planes".

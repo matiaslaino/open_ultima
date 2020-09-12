@@ -19,8 +19,8 @@ void OverworldScreen::init(SDL_Renderer *renderer,
 
     // write to map so it's easier to find the sprite type by type name.
     for (const auto &spriteType : spriteTypes) {
-        _spritesMap.insert(pair<OverworldSpriteType::SpriteType, shared_ptr<OverworldSpriteType>>(spriteType->getType(),
-                                                                                                  spriteType));
+        _spritesMap.insert(pair<OverworldSpriteType::SpriteType, shared_ptr<OverworldSpriteType>>(
+                spriteType->getType(), spriteType));
     }
 
     // TODO: get this from parameter.
@@ -127,6 +127,17 @@ void OverworldScreen::move(int deltaX, int deltaY) {
     if (playerX > BOUND_X_TILES) playerX = BOUND_X_TILES;
     if (playerY < 0) playerY = 0;
     if (playerY > BOUND_Y_TILES) playerY = BOUND_Y_TILES;
+
+    // Don't allow player to walk across mountains or through water.
+    OverworldSpriteType::SpriteType typeTypeSteppedOn = _tiles[getTileOffset(playerX, playerY)]->getSpriteType();
+    if (typeTypeSteppedOn == OverworldSpriteType::SpriteType::MOUNTAIN) {
+        CommandDisplay::write("Mountains are impassable!", true);
+        return;
+    }
+    if (typeTypeSteppedOn == OverworldSpriteType::SpriteType::WATER) {
+        CommandDisplay::write("You can't walk on water!", true);
+        return;
+    }
 
     if (playerX < _gameContext->getPlayer()->getOverworldX()) {
         CommandDisplay::write("West", true);

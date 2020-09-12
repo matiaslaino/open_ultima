@@ -133,14 +133,7 @@ int main(int argc, char *args[]) {
             auto cgaTilesPath = "F:\\GOGLibrary\\Ultima 1\\CGATILES.BIN";
             auto usingEga = true;
 
-            auto townSpriteLoader = make_shared<TownSpriteTypeLoader>();
-            townSpriteLoader->init("F:\\GOGLibrary\\Ultima 1\\EGATOWN.BIN",
-                                   make_unique<EGARowPlanarDecodeStrategy>(8, 8).get(),
-                                   gRenderer);
-            auto townManager = make_shared<TownManager>();
-            townManager->init(townSpriteLoader, "F:\\GOGLibrary\\Ultima 1\\TCD.BIN");
-
-            auto townScreen = make_shared<TownScreen>(gameContext, townManager);
+            auto townScreen = make_shared<TownScreen>(gameContext, gRenderer);
 
             overworldScreen->init(gRenderer, make_unique<EGARowPlanarDecodeStrategy>(16, 16).get(), egaTilesPath);
 

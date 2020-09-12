@@ -2,20 +2,17 @@
 
 #include "PixelDecodeStrategy.h"
 
-namespace OpenUltima {
+class EGARowPlanarDecodeStrategy :
+        public PixelDecodeStrategy {
+public:
+    EGARowPlanarDecodeStrategy(int tileWidth, int tileHeight) : PixelDecodeStrategy(tileWidth, tileHeight) {}
 
-    class EGARowPlanarDecodeStrategy :
-            public PixelDecodeStrategy {
-    public:
-        EGARowPlanarDecodeStrategy(int tileWidth, int tileHeight) : PixelDecodeStrategy(tileWidth, tileHeight) {}
+    vector<uint32_t> GetPixels(vector<uint8_t> bytes) override;
 
-        vector<uint32_t> GetPixels(vector<uint8_t> bytes) override;
+private:
+    static constexpr int PLANES_COUNT = 4;
 
-    private:
-        static constexpr int PLANES_COUNT = 4;
+    static uint32_t GetPixel(int colorData);
 
-        static uint32_t GetPixel(int colorData);
-
-        int getBytesPerTile() override;
-    };
+    int getBytesPerTile() override;
 };

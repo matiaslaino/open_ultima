@@ -8,8 +8,7 @@
 
 class TownScreen : public Screen {
 public:
-    explicit TownScreen(const shared_ptr<GameContext> &gameContext, shared_ptr<TownManager> townManager)
-            : Screen(gameContext), _townManager(std::move(townManager)) {}
+    TownScreen(const shared_ptr<GameContext> &gameContext, SDL_Renderer *renderer);
 
     void update(float elapsed) override;
 
@@ -20,6 +19,18 @@ public:
     void refresh();
 
 private:
-    shared_ptr<Town> _town = nullptr;
+    static constexpr int PLAYER_INITIAL_TOWN_POSITION_X = 19;
+    static constexpr int PLAYER_INITIAL_TOWN_POSITION_Y = 17;
+    static constexpr int PLAYER_INITIAL_CASTLE_POSITION_X = 0;
+    static constexpr int PLAYER_INITIAL_CASTLE_POSITION_Y = 7;
+
     shared_ptr<TownManager> _townManager;
+    shared_ptr<TownSpriteTypeLoader> _townSpriteTypeLoader;
+
+    shared_ptr<Town> _currentTown = nullptr;
+    shared_ptr<TownTile> _playerTile;
+
+    void resetPlayerPosition();
+
+    void playerMove(CardinalPoint direction);
 };

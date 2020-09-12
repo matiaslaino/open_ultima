@@ -2,6 +2,8 @@
 #include "../CommandDisplay.h"
 #include "Door.h"
 #include "../common/ShapeUtils.h"
+#include "../common/Fonts.h"
+#include "../common/Colors.h"
 
 void DungeonScreen::update(float elapsed) {
     if (!_drawEnabled) {
@@ -14,6 +16,10 @@ void DungeonScreen::update(float elapsed) {
 }
 
 void DungeonScreen::draw(SDL_Renderer *renderer) {
+    _orientationLabel->loadFromRenderedText(Fonts::standard(), renderer, CardinalPointUtils::toString(
+            _gameContext->getPlayer()->getDungeonOrientation()), Colors::TEXT_COLOR);
+    _orientationLabel->render(renderer, 144, 150);
+
     ShapeUtils::drawDungeonBorders(renderer);
 
     // TODO: not too happy with the viewport thingy
@@ -134,8 +140,6 @@ void DungeonScreen::draw(SDL_Renderer *renderer) {
         }
     }
 
-    // level position x: 136
-
     // draw sprites
     int distance = 0;
     for (const auto &tile : _vision) {
@@ -193,7 +197,10 @@ void DungeonScreen::handle(const SDL_Event &e) {
 
 void DungeonScreen::moveForward() {
     auto player = _gameContext->getPlayer();
-    if (_vision[1].feature == DungeonFeature::Wall) return;
+    if (_vision[1].feature == DungeonFeature::Wall) {
+        CommandDisplay::write("Forward - path blocked!", true);
+        return;
+    }
 
     // If we arrive to this point, we're either inside a door, or in a hallway and can move forward.
     player->dungeonMoveForward();
