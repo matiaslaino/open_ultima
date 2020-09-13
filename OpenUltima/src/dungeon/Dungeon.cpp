@@ -1,5 +1,7 @@
 #include "Dungeon.h"
 #include "DungeonFeature.h"
+#include "enemies/Thief.h"
+#include "enemies/GiantRat.h"
 
 void Dungeon::randomize() {
     vector<vector<DungeonFeature>> levelColumns = {
@@ -8,9 +10,9 @@ void Dungeon::randomize() {
             {DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None},
             {DungeonFeature::Door, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Door, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall},
             {DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None},
-            {DungeonFeature::Door, DungeonFeature::None, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall},
+            {DungeonFeature::Door, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall},
             {DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None},
-            {DungeonFeature::Door, DungeonFeature::None, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall},
+            {DungeonFeature::Door, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall},
             {DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None},
     };
     _levels.push_back(levelColumns);
@@ -18,6 +20,7 @@ void Dungeon::randomize() {
     /*for (int level = 0; level < MAX_LEVEL; level++) {
 
     }*/
+    _enemiesPerLevel.push_back({make_shared<GiantRat>(2, 3)});
 }
 
 DungeonFeature Dungeon::lookLeftFromEast(vector<vector<DungeonFeature>> levelFeatures, int x, int y) {
@@ -135,6 +138,15 @@ vector<VisibleDungeonSpace> Dungeon::getVisible(int level, int x, int y, Cardina
         dungeonSpace = VisibleDungeonSpace(cellFeature,
                                            leftFeature,
                                            rightFeature);
+
+        bool foundNpc = false;
+        int npcIndex = 0;
+        while (!foundNpc && npcIndex < _enemiesPerLevel[level].size()) {
+            auto enemy = _enemiesPerLevel[level][npcIndex++];
+            if (enemy->getX() == visibleTileX && enemy->getY() == visibleTileY) {
+                dungeonSpace.enemy = enemy;
+            }
+        }
 
         visibleSpaces.push_back(dungeonSpace);
         i++;

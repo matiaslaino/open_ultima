@@ -3,6 +3,7 @@
 #include <memory>
 #include <utility>
 #include "DungeonFeature.h"
+#include "enemies/Enemy.h"
 
 using namespace std;
 
@@ -15,4 +16,5 @@ public:
     DungeonFeature feature;
     DungeonFeature left;
     DungeonFeature right;
+    shared_ptr<Enemy> enemy = nullptr;
 };

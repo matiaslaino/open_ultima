@@ -31,6 +31,5 @@ private:
     unique_ptr<LTexture> _line1;
     unique_ptr<LTexture> _line2;
     unique_ptr<LTexture> _line3;
-
 };
 

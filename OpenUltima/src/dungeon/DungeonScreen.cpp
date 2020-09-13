@@ -4,6 +4,7 @@
 #include "../common/ShapeUtils.h"
 #include "../common/Fonts.h"
 #include "../common/Colors.h"
+#include "enemies/Thief.h"
 
 void DungeonScreen::update(float elapsed) {
     if (!_drawEnabled) {
@@ -160,6 +161,16 @@ void DungeonScreen::draw(SDL_Renderer *renderer) {
 
         distance++;
     }
+
+    distance = 0;
+    for (const auto &tile : _vision) {
+
+        if (tile.enemy != nullptr) {
+            tile.enemy->draw(renderer, distance);
+        }
+
+        distance++;
+    }
 }
 
 void DungeonScreen::handle(const SDL_Event &e) {
@@ -191,13 +202,22 @@ void DungeonScreen::handle(const SDL_Event &e) {
 
         _vision = _dungeon->getVisible(player->getDungeonLevel(), player->getDungeonX(), player->getDungeonY(),
                                        player->getDungeonOrientation());
+
+        for (const auto &visibleTile: _vision) {
+            if (visibleTile.enemy) {
+                CommandDisplay::write(visibleTile.enemy->getName(), false);
+                // Only display the name of the first enemy in the conga line.
+                break;
+            }
+        }
+
         _drawEnabled = false;
     }
 }
 
 void DungeonScreen::moveForward() {
     auto player = _gameContext->getPlayer();
-    if (_vision[1].feature == DungeonFeature::Wall) {
+    if (_vision[1].feature == DungeonFeature::Wall || _vision[1].enemy != nullptr) {
         CommandDisplay::write("Forward - path blocked!", true);
         return;
     }

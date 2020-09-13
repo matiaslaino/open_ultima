@@ -7,11 +7,7 @@ set(CMAKE_CXX_STANDARD 17)
 find_package(SDL2 CONFIG REQUIRED)
 find_package(sdl2-image CONFIG REQUIRED)
 find_package(sdl2-ttf CONFIG REQUIRED)
-
-#file(GLOB_RECURSE open_ultima_SRC
-#        *.h
-#        *.cpp
-#        )
+find_package(sdl2-gfx CONFIG REQUIRED)
 
 add_executable(open_ultima main.cpp src/common/graphics/CGALinearDecodeStrategy.cpp
         src/common/graphics/EGARowPlanarDecodeStrategy.cpp
@@ -38,10 +34,12 @@ add_executable(open_ultima main.cpp src/common/graphics/CGALinearDecodeStrategy.
         src/town/Town.cpp src/town/Town.h
         src/town/TownManager.cpp src/town/TownManager.h
         src/town/TownTile.cpp src/town/TownTile.h
-        src/common/Tile.cpp src/common/Tile.h src/dungeon/DungeonManager.cpp src/dungeon/DungeonManager.h)
+        src/common/Tile.cpp src/common/Tile.h src/dungeon/DungeonManager.cpp src/dungeon/DungeonManager.h src/dungeon/enemies/Thief.cpp src/dungeon/enemies/Thief.h src/dungeon/enemies/Enemy.cpp src/dungeon/enemies/Enemy.h
+        src/dungeon/enemies/GiantRat.cpp)
 
 target_link_libraries(open_ultima PRIVATE SDL2::SDL2 SDL2::SDL2main)
 target_link_libraries(open_ultima PRIVATE SDL2::SDL2_image)
 target_link_libraries(open_ultima PRIVATE SDL2::SDL2_ttf)
+target_link_libraries(open_ultima PRIVATE SDL2::SDL2_gfx)
 
 file(COPY resources DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
