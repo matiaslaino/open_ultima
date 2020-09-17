@@ -16,6 +16,7 @@ Dependencies:
 Features implemented:
   - Basic overworld.
   - Super basic dungeon crawling.
-  - Town and Castle (empty for now)
+  - Basic dungeon combat.
+  - Town and Castle (empty for now).
 
 ![Demo](open_ultima.gif)
