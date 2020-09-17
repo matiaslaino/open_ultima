@@ -5,7 +5,7 @@
 
 class GiantRat : public Enemy {
 public:
-    GiantRat(int x, int y) : Enemy(x, y) {}
+    GiantRat(int x, int y) : Enemy(x, y, 5) {}
 
     void draw(SDL_Renderer *renderer, int distance) override;
 

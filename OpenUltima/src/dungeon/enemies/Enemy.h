@@ -7,7 +7,7 @@ using namespace std;
 
 class Enemy {
 public:
-    Enemy(int x, int y) : _x(x), _y(y) {}
+    Enemy(int x, int y, int hp) : _x(x), _y(y), _hp(hp) {}
 
     virtual void update(float elapsed) = 0;
 
@@ -18,6 +18,14 @@ public:
     int getX() { return _x; }
 
     int getY() { return _y; }
+
+    int getHP() { return _hp; }
+
+    int getDamage() { return 1; }
+
+    void receiveDamage(int damage);
+
+    bool isDead() { return _hp <= 0; }
 
 protected:
     int _x;

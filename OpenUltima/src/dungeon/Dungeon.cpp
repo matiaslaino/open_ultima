@@ -143,7 +143,7 @@ vector<VisibleDungeonSpace> Dungeon::getVisible(int level, int x, int y, Cardina
         int npcIndex = 0;
         while (!foundNpc && npcIndex < _enemiesPerLevel[level].size()) {
             auto enemy = _enemiesPerLevel[level][npcIndex++];
-            if (enemy->getX() == visibleTileX && enemy->getY() == visibleTileY) {
+            if (enemy->getX() == visibleTileX && enemy->getY() == visibleTileY && !enemy->isDead()) {
                 dungeonSpace.enemy = enemy;
             }
         }

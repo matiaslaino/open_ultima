@@ -5,7 +5,7 @@
 
 class Thief : public Enemy {
 public:
-    Thief(int x, int y) : Enemy(x, y) {}
+    Thief(int x, int y) : Enemy(x, y, 10) {}
 
     void draw(SDL_Renderer *renderer, int distance) override;
 

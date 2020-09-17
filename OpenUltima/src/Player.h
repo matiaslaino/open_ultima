@@ -49,6 +49,11 @@ public:
     int getXP() const { return _xp; };
 
     int getMoney() const { return _money; };
+
+    void receiveDamage(int damage) { _hp -= damage; };
+
+    bool isDead() { return _hp <= 0; }
+
 private:
     int _overworldX;
     int _overworldY;

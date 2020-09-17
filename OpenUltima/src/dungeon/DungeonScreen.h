@@ -46,5 +46,13 @@ private:
     static void drawLeftWalls(SDL_Renderer *renderer);
 
     static void drawRightWalls(SDL_Renderer *renderer);
+
+    void doCombatRound(bool playerAttacks);
+
+    void doPlayerAttack();
+
+    void doMonsterAttacks();
+
+    void doMonsterAttack(const shared_ptr<Enemy>& enemy);
 };
 

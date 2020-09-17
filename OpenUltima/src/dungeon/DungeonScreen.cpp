@@ -165,7 +165,7 @@ void DungeonScreen::draw(SDL_Renderer *renderer) {
     distance = 0;
     for (const auto &tile : _vision) {
 
-        if (tile.enemy != nullptr) {
+        if (tile.enemy != nullptr && !tile.enemy->isDead()) {
             tile.enemy->draw(renderer, distance);
         }
 
@@ -195,6 +195,9 @@ void DungeonScreen::handle(const SDL_Event &e) {
             case SDLK_RIGHT:
                 player->dungeonTurn(Direction::Right);
                 CommandDisplay::write("Turn right", true);
+                break;
+            case SDLK_a:
+                doCombatRound(true);
                 break;
             default:
                 return;
@@ -235,4 +238,57 @@ void DungeonScreen::drawLeftWalls(SDL_Renderer *renderer) {
 void DungeonScreen::drawRightWalls(SDL_Renderer *renderer) {
     SDL_RenderDrawLine(renderer, 296, 0, 155, 72);
     SDL_RenderDrawLine(renderer, 296, 144, 155, 73);
+}
+
+void DungeonScreen::doCombatRound(bool playerAttacks) {
+    if (playerAttacks) doPlayerAttack();
+    doMonsterAttacks();
+}
+
+void DungeonScreen::doPlayerAttack() {
+    // attack monster in front of player
+    auto player = _gameContext->getPlayer();
+    shared_ptr<Enemy> enemy = nullptr;
+
+    for (const auto &tile: _vision) {
+        if (tile.enemy != nullptr) {
+            enemy = tile.enemy;
+            break;
+        }
+    }
+
+    if (enemy != nullptr) {
+        CommandDisplay::write("Attack with your bare hands", true);
+
+        enemy->receiveDamage(1);
+        if (enemy->isDead()) {
+            CommandDisplay::write("Hit! " + enemy->getName() + " killed!", false);
+        } else {
+            CommandDisplay::write("Hit! 1 damage", false);
+        }
+    }
+}
+
+void DungeonScreen::doMonsterAttacks() {
+    auto player = _gameContext->getPlayer();
+
+    for (const auto &enemy: _dungeon->getLevelEnemies(player->getDungeonLevel())) {
+        if ((enemy->getX() == player->getDungeonX() - 1 || enemy->getX() == player->getDungeonX() + 1) &&
+            (enemy->getY() == player->getDungeonY() - 1 || enemy->getY() == player->getDungeonY() + 1)) {
+            doMonsterAttack(enemy);
+        }
+    }
+}
+
+void DungeonScreen::doMonsterAttack(const shared_ptr<Enemy> &enemy) {
+    auto player = _gameContext->getPlayer();
+
+    CommandDisplay::write("Attacked by " + enemy->getName() + "!", false);
+    CommandDisplay::write("Hit! " + to_string(enemy->getDamage()) + " damage!", false);
+
+    player->receiveDamage(enemy->getDamage());
+
+    if (player->isDead()) {
+        CommandDisplay::write("You are dead, nothing happens for now! :)", false);
+    }
 }
