@@ -14,6 +14,8 @@
 #include "src/town/TownManager.h"
 #include "src/town/TownScreen.h"
 #include "src/town/TownSpriteTypeLoader.h"
+#include <iostream>
+#include "src/Configuration.h"
 
 using namespace std;
 using namespace OpenUltima;
@@ -110,6 +112,9 @@ void close() {
 }
 
 int main(int argc, char *args[]) {
+    Configuration::init();
+    cout << Configuration::getEgaOverworldTilesFilePath();
+
     //Start up SDL and create window
     if (!init()) {
         printf("Failed to initialize!\n");
@@ -129,8 +134,8 @@ int main(int argc, char *args[]) {
             auto overworldScreen = make_shared<OverworldScreen>(gameContext, 19, 9);
             auto dungeonScreen = make_shared<DungeonScreen>(gameContext);
 
-            auto egaTilesPath = "F:\\GOGLibrary\\Ultima 1\\EGATILES.BIN";
-            auto cgaTilesPath = "F:\\GOGLibrary\\Ultima 1\\CGATILES.BIN";
+            auto egaTilesPath = Configuration::getEgaOverworldTilesFilePath();
+            auto cgaTilesPath = Configuration::getCgaOverworldTilesFilePath();
             auto usingEga = true;
 
             auto townScreen = make_shared<TownScreen>(gameContext, gRenderer);

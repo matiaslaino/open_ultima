@@ -1,15 +1,16 @@
 #include "TownScreen.h"
 #include "../common/graphics/EGARowPlanarDecodeStrategy.h"
 #include "../CommandDisplay.h"
+#include "../Configuration.h"
 
 TownScreen::TownScreen(const shared_ptr<GameContext> &gameContext, SDL_Renderer *renderer)
         : Screen(gameContext) {
     _townSpriteTypeLoader = make_shared<TownSpriteTypeLoader>();
-    _townSpriteTypeLoader->init("F:\\GOGLibrary\\Ultima 1\\EGATOWN.BIN",
+    _townSpriteTypeLoader->init(Configuration::getEgaTownFilePath(),
                                 make_unique<EGARowPlanarDecodeStrategy>(8, 8).get(),
                                 renderer);
     _townManager = make_shared<TownManager>();
-    _townManager->init(_townSpriteTypeLoader, "F:\\GOGLibrary\\Ultima 1\\TCD.BIN");
+    _townManager->init(_townSpriteTypeLoader, Configuration::getTownMapFilePath());
 
     auto playerSpriteType = _townSpriteTypeLoader->getSpriteType(TownSpriteType::SpriteType::PERSON_PLAYER);
     _playerTile = make_shared<TownTile>(PLAYER_INITIAL_TOWN_POSITION_X, PLAYER_INITIAL_TOWN_POSITION_Y,

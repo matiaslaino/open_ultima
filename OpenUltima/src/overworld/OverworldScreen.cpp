@@ -7,6 +7,7 @@
 #include "../CommandDisplay.h"
 #include <iostream>
 #include "../common/ShapeUtils.h"
+#include "../Configuration.h"
 
 void OverworldScreen::init(SDL_Renderer *renderer,
                            PixelDecodeStrategy *pixelDecodeStrategy, const string &tilesFsPath) {
@@ -23,8 +24,7 @@ void OverworldScreen::init(SDL_Renderer *renderer,
                 spriteType->getType(), spriteType));
     }
 
-    // TODO: get this from parameter.
-    string mapFileLocation = R"(F:\GOGLibrary\Ultima 1\MAP.BIN)";
+    string mapFileLocation = Configuration::getMapFilePath();
 
     auto file = SDL_RWFromFile(mapFileLocation.c_str(), "r+b");
     auto buffer = new uint8_t[MAP_FILE_SIZE];

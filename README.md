@@ -12,6 +12,7 @@ Dependencies:
 - SDL TTF 2.0.15
 - SDL Image 2.0.5
 - SDL Gfx
+- taoJSON (https://github.com/taocpp/json)
 
 Features implemented:
   - Basic overworld.
@@ -20,3 +21,19 @@ Features implemented:
   - Town and Castle (empty for now).
 
 ![Demo](open_ultima.gif)
+
+## Compiling
+1. Install [Microsoft's Vcpkg](https://github.com/Microsoft/vcpkg) for a much simpler way of fetching dependencies (Oh Maven how I miss thee), follow the documentation in git to properly initialize it.
+2. Install the dependencies using your target architecture.
+    
+    For example, fetching them on Windows x64:
+    
+    `.\vcpck.exe install sdl2:windows-x64`
+    
+    `.\vcpck.exe install sdl2-ttf:windows-x64`
+    
+    ...
+    
+    `.\vcpck.exe install taoJSON:windows-x64`
+3. Compile using CMake (I strongly suggest using either Jetbrains's CLion, or VC++)
+4. Before executing, make sure you have a valid `config.json` file next to the executable.
