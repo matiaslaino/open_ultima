@@ -20,10 +20,6 @@
 using namespace std;
 using namespace OpenUltima;
 
-//Screen dimension constants, this should be a multiple of the regular Ultima resolution to maintain aspect ratio.
-const int SCREEN_WIDTH = 640;
-const int SCREEN_HEIGHT = 400;
-
 //Starts up SDL and creates window
 bool init();
 
@@ -58,7 +54,8 @@ bool init() {
 
         //Create window
         gWindow = SDL_CreateWindow("(Open)Ultima 1: The First Age of Darkness", SDL_WINDOWPOS_UNDEFINED,
-                                   SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+                                   SDL_WINDOWPOS_UNDEFINED, Configuration::getScreenWidth(),
+                                   Configuration::getScreenHeight(), SDL_WINDOW_SHOWN);
         if (gWindow == NULL) {
             printf("Window could not be created! SDL Error: %s\n", SDL_GetError());
             success = false;
