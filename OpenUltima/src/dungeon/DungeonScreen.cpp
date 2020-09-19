@@ -186,15 +186,15 @@ void DungeonScreen::handle(const SDL_Event &e) {
             case SDLK_DOWN:
                 player->dungeonTurn(Direction::Right);
                 player->dungeonTurn(Direction::Right);
-                CommandDisplay::write("Turn around", true);
+                CommandDisplay::writeLn("Turn around", true);
                 break;
             case SDLK_LEFT:
                 player->dungeonTurn(Direction::Left);
-                CommandDisplay::write("Turn left", true);
+                CommandDisplay::writeLn("Turn left", true);
                 break;
             case SDLK_RIGHT:
                 player->dungeonTurn(Direction::Right);
-                CommandDisplay::write("Turn right", true);
+                CommandDisplay::writeLn("Turn right", true);
                 break;
             case SDLK_a:
                 doCombatRound(true);
@@ -208,7 +208,7 @@ void DungeonScreen::handle(const SDL_Event &e) {
 
         for (const auto &visibleTile: _vision) {
             if (visibleTile.enemy) {
-                CommandDisplay::write(visibleTile.enemy->getName(), false);
+                CommandDisplay::writeLn(visibleTile.enemy->getName(), false);
                 // Only display the name of the first enemy in the conga line.
                 break;
             }
@@ -221,13 +221,13 @@ void DungeonScreen::handle(const SDL_Event &e) {
 void DungeonScreen::moveForward() {
     auto player = _gameContext->getPlayer();
     if (_vision[1].feature == DungeonFeature::Wall || _vision[1].enemy != nullptr) {
-        CommandDisplay::write("Forward - path blocked!", true);
+        CommandDisplay::writeLn("Forward - path blocked!", true);
         return;
     }
 
     // If we arrive to this point, we're either inside a door, or in a hallway and can move forward.
     player->dungeonMoveForward();
-    CommandDisplay::write("Forward", true);
+    CommandDisplay::writeLn("Forward", true);
 }
 
 void DungeonScreen::drawLeftWalls(SDL_Renderer *renderer) {
@@ -258,13 +258,13 @@ void DungeonScreen::doPlayerAttack() {
     }
 
     if (enemy != nullptr) {
-        CommandDisplay::write("Attack with your bare hands", true);
+        CommandDisplay::writeLn("Attack with your bare hands", true);
 
         enemy->receiveDamage(1);
         if (enemy->isDead()) {
-            CommandDisplay::write("Hit! " + enemy->getName() + " killed!", false);
+            CommandDisplay::writeLn("Hit! " + enemy->getName() + " killed!", false);
         } else {
-            CommandDisplay::write("Hit! 1 damage", false);
+            CommandDisplay::writeLn("Hit! 1 damage", false);
         }
     }
 }
@@ -283,12 +283,12 @@ void DungeonScreen::doMonsterAttacks() {
 void DungeonScreen::doMonsterAttack(const shared_ptr<Enemy> &enemy) {
     auto player = _gameContext->getPlayer();
 
-    CommandDisplay::write("Attacked by " + enemy->getName() + "!", false);
-    CommandDisplay::write("Hit! " + to_string(enemy->getDamage()) + " damage!", false);
+    CommandDisplay::writeLn("Attacked by " + enemy->getName() + "!", false);
+    CommandDisplay::writeLn("Hit! " + to_string(enemy->getDamage()) + " damage!", false);
 
     player->receiveDamage(enemy->getDamage());
 
     if (player->isDead()) {
-        CommandDisplay::write("You are dead, nothing happens for now! :)", false);
+        CommandDisplay::writeLn("You are dead, nothing happens for now! :)", false);
     }
 }

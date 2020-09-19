@@ -1,10 +1,9 @@
 #include "TileTypeLoader.h"
 #include "../common/graphics/SpriteSheetLoader.h"
 
-
-vector<shared_ptr<OverworldSpriteType>>
-TileTypeLoader::loadOverworldSprites(const string &tilesFileLocation, PixelDecodeStrategy *pixelDecodeStrategy,
-                                     SDL_Renderer *renderer) {
+vector<shared_ptr<OverworldSpriteType>> TileTypeLoader::loadOverworldSprites(const string &tilesFileLocation,
+                                                                             PixelDecodeStrategy *pixelDecodeStrategy,
+                                                                             SDL_Renderer *renderer) {
     // Tile definition file contains 52 different tiles, some are actually the animated portion of another tile (castle with flag up, and with flag down).
     auto file = SDL_RWFromFile(tilesFileLocation.c_str(), "r+b");
 

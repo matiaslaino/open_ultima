@@ -183,6 +183,7 @@ shared_ptr<Town> TownManager::getTown(int x, int y) {
     if (x == 65 && y == 133) return _towns[6];
     if (x == 142 && y == 139) return _towns[7];
     if (x == 143 && y == 139) return _towns[2];
+    if (x == 39 && y == 39) return _towns[3];
 
 }
 

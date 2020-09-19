@@ -23,9 +23,9 @@ public:
 
     void update(float elapsed, AnimationType animationType, SDL_Rect box);
 
-    vector<TileAnimation::RenderQuad>
-    getRenderQuads(SDL_Renderer *renderer, AnimationType animationType, SDL_Rect spriteBox,
-                   SDL_Rect textureSpriteSource, int swapOffset) const;
+    vector<TileAnimation::RenderQuad> getRenderQuads(SDL_Renderer *renderer,
+                                                     AnimationType animationType, SDL_Rect spriteBox,
+                                                     SDL_Rect textureSpriteSource, int swapOffset) const;
 
 private:
     static double _scroll;

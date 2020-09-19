@@ -80,9 +80,9 @@ void OverworldScreen::init(SDL_Renderer *renderer,
         auto tile2 = make_shared<OverworldTile>(toPixels(x2), toPixels(y2), sprite2, animation);
         _tiles.push_back(tile2);
 
-        if (sprite1->getType() == OverworldSpriteType::SpriteType::TOWN) {
+        if (sprite2->getType() == OverworldSpriteType::SpriteType::TOWN) {
             cout << "Town at: " << x2 << "," << y2 << "\n";
-        } else if (sprite1->getType() == OverworldSpriteType::SpriteType::CASTLE) {
+        } else if (sprite2->getType() == OverworldSpriteType::SpriteType::CASTLE) {
             cout << "Castle at: " << x2 << "," << y2 << "\n";
         }
     }
@@ -100,6 +100,16 @@ void OverworldScreen::update(float elapsed) {
     TileAnimation::updateScrolling(elapsed);
 
     executeOnVisibleTiles([elapsed](OverworldTile *tile) -> void { tile->update(elapsed); });
+
+    for (const auto &enemy: _enemies) {
+        enemy->update(elapsed);
+    }
+
+    npcSpawnCounter += elapsed;
+    if (npcSpawnCounter >= NPC_SPAWN_PERIOD) {
+        npcSpawnCounter = 0;
+        spawnNpcs();
+    }
 }
 
 void OverworldScreen::draw(SDL_Renderer *renderer) {
@@ -116,7 +126,20 @@ void OverworldScreen::draw(SDL_Renderer *renderer) {
     executeOnVisibleTiles([renderer, camera](Tile *tile) -> void { tile->draw(renderer, camera); });
 
     _playerTile->draw(renderer, camera);
+
+    for (const auto &enemy: _enemies) {
+        enemy->draw(renderer, camera);
+    }
 }
+
+void OverworldScreen::moveOrAttack(int deltaX, int deltaY) {
+    if (!_attackMode) {
+        move(deltaX, deltaY);
+    } else {
+        attack(deltaX, deltaY);
+    }
+}
+
 
 void OverworldScreen::move(int deltaX, int deltaY) {
     int playerX = _gameContext->getPlayer()->getOverworldX() + deltaX;
@@ -131,23 +154,24 @@ void OverworldScreen::move(int deltaX, int deltaY) {
     // Don't allow player to walk across mountains or through water.
     OverworldSpriteType::SpriteType typeTypeSteppedOn = _tiles[getTileOffset(playerX, playerY)]->getSpriteType();
     if (typeTypeSteppedOn == OverworldSpriteType::SpriteType::MOUNTAIN) {
-        CommandDisplay::write("Mountains are impassable!", true);
-        return;
-    }
-    if (typeTypeSteppedOn == OverworldSpriteType::SpriteType::WATER) {
-        CommandDisplay::write("You can't walk on water!", true);
+        CommandDisplay::writeLn("Mountains are impassable!", true);
         return;
     }
 
-    if (playerX < _gameContext->getPlayer()->getOverworldX()) {
-        CommandDisplay::write("West", true);
-    } else if (playerX > _gameContext->getPlayer()->getOverworldX()) {
-        CommandDisplay::write("East", true);
-    } else if (playerY > _gameContext->getPlayer()->getOverworldY()) {
-        CommandDisplay::write("South", true);
-    } else if (playerY < _gameContext->getPlayer()->getOverworldY()) {
-        CommandDisplay::write("North", true);
+    if (typeTypeSteppedOn == OverworldSpriteType::SpriteType::WATER) {
+        CommandDisplay::writeLn("You can't walk on water!", true);
+        return;
     }
+
+    // Don't allow player to walk past an enemy
+    for (const auto &enemy: _enemies) {
+        if (enemy->getX() == playerX && enemy->getY() == playerY) {
+            CommandDisplay::writeLn("Blocked by " + enemy->getName() + "!", true);
+            return;
+        }
+    }
+
+    CommandDisplay::writeLn(getCardinalPointFromDeltas(deltaX, deltaY), true);
 
     _gameContext->getPlayer()->setOverworldX(playerX);
     _gameContext->getPlayer()->setOverworldY(playerY);
@@ -158,6 +182,29 @@ void OverworldScreen::move(int deltaX, int deltaY) {
 
     // re-center camera on player if possible
     setCamera();
+}
+
+void OverworldScreen::attack(int deltaX, int deltaY) {
+    auto attackX = _gameContext->getPlayer()->getOverworldX() + deltaX;
+    auto attackY = _gameContext->getPlayer()->getOverworldY() + deltaY;
+
+    shared_ptr<OverworldEnemy> target;
+    int index = 0;
+    for (const auto &enemy: _enemies) {
+        if (enemy->getX() == attackX && enemy->getY() == attackY) {
+            target = enemy;
+            break;
+        }
+        index++;
+    }
+
+    //target->receiveDamage(1);
+    CommandDisplay::writeLn(getCardinalPointFromDeltas(deltaX, deltaY), true);
+
+    CommandDisplay::writeLn("Killed the " + target->getName() + "!", false);
+    _enemies.erase(_enemies.begin() + index, _enemies.begin() + index + 1);
+
+    _attackMode = false;
 }
 
 void OverworldScreen::enterPlace() {
@@ -190,24 +237,30 @@ void OverworldScreen::handle(const SDL_Event &event) {
 
         switch (pressedKey) {
             case SDLK_UP:
-                move(0, -1);
+                moveOrAttack(0, -1);
                 break;
             case SDLK_DOWN:
-                move(0, 1);
+                moveOrAttack(0, 1);
                 break;
             case SDLK_LEFT:
-                move(-1, 0);
+                moveOrAttack(-1, 0);
                 break;
             case SDLK_RIGHT:
-                move(1, 0);
+                moveOrAttack(1, 0);
                 break;
             case SDLK_e:
                 enterPlace();
                 break;
+            case SDLK_a:
+                setAttackMode(true);
+                break;
             default:
+                setAttackMode(false);
                 return;
         }
     }
+
+    activateNpcs();
 }
 
 void OverworldScreen::setCamera() {
@@ -289,4 +342,74 @@ int OverworldScreen::getTileOffsetFromPositionInPixels(int xPx, int yPx) {
 
 int OverworldScreen::getTileOffset(int x, int y) {
     return y * TILES_PER_ROW + x;
+}
+
+void OverworldScreen::activateNpcs() {
+    auto player = _gameContext->getPlayer();
+
+    for (auto enemy: _enemies) {
+        auto diffX = enemy->getX() - player->getOverworldX();
+        auto diffY = enemy->getY() - player->getOverworldY();
+
+        if (abs(diffX) > abs(diffY)) {
+            // enemy is farther away in the x-axis
+            if (diffX < 0) {
+                // player is to the right of the enemy
+
+            } else {
+                // player is to the left of the enemy
+            }
+        } else {
+            // enemy is farther away in the y-axis
+            if (diffY < 0) {
+                // player is "below" of the enemy
+            } else {
+                // player is "above" the enemy
+            }
+        }
+    }
+}
+
+void OverworldScreen::spawnNpcs() {
+    auto player = _gameContext->getPlayer();
+    auto playerX = player->getOverworldX();
+    auto playerY = player->getOverworldY();
+
+    if (_enemies.size() < 5) {
+        // Spawn some more NPCs until we have at least 5.
+        auto x = playerX + OverworldScreen::DISPLAY_SIZE_TILES_WIDTH + rand() % 5;
+        auto y = playerY + OverworldScreen::DISPLAY_SIZE_TILES_HEIGHT + rand() % 5;
+
+        // Ignore terrain types for now.
+        auto spriteType = _spritesMap.find(OverworldSpriteType::SpriteType::WANDERING_WARLOCK)->second;
+        auto animation = make_shared<TileAnimation>();
+        auto tile = make_shared<OverworldTile>(x, y, spriteType, animation);
+        auto enemy = make_shared<OverworldEnemy>(10, x, y, "Wandering Warlock", tile);
+
+        _enemies.push_back(enemy);
+    }
+}
+
+void OverworldScreen::setAttackMode(bool set) {
+    if (set) {
+        _attackMode = true;
+        CommandDisplay::write("Attack with dagger: ");
+    } else {
+        if (_attackMode) {
+            _attackMode = false;
+            CommandDisplay::writeLn("Nothing!", true);
+        }
+    }
+}
+
+string OverworldScreen::getCardinalPointFromDeltas(int deltaX, int deltaY) {
+    if (deltaX < 0) {
+        return "West";
+    } else if (deltaX > 0) {
+        return "East";
+    } else if (deltaY > 0) {
+        return "North";
+    } else if (deltaY < 0) {
+        return "South";
+    }
 }

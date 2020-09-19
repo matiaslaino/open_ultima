@@ -15,7 +15,7 @@ void TileAnimation::update(float elapsed, AnimationType animationType, SDL_Rect 
         case AnimationType::SWAP:
             _swapCounter += elapsed;
 
-            if (_swapCounter >= 3) {
+            if (_swapCounter >= 2500) {
                 _swapCounter = 0;
                 _swapped = !_swapped;
             }
@@ -23,15 +23,15 @@ void TileAnimation::update(float elapsed, AnimationType animationType, SDL_Rect 
     }
 }
 
-vector<TileAnimation::RenderQuad>
-TileAnimation::getRenderQuads(SDL_Renderer *renderer, AnimationType animationType, SDL_Rect spriteBox,
-                              SDL_Rect textureSpriteSource, int swapOffset) const {
+vector<TileAnimation::RenderQuad> TileAnimation::getRenderQuads(SDL_Renderer *renderer, AnimationType animationType,
+                                                                SDL_Rect spriteBox,
+                                                                SDL_Rect textureSpriteSource, int swapOffset) const {
     vector<TileAnimation::RenderQuad> result;
 
     switch (animationType) {
         case AnimationType::NOP: {
             SDL_Rect renderQuadNop = {spriteBox.x, spriteBox.y, spriteBox.w, spriteBox.h};
-            result.push_back(TileAnimation::RenderQuad(textureSpriteSource, renderQuadNop));
+            result.emplace_back(textureSpriteSource, renderQuadNop);
         }
             break;
         case AnimationType::SCROLLING: {
