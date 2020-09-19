@@ -97,6 +97,9 @@ bool loadMedia() {
 }
 
 void close() {
+    _commandDisplay = nullptr;
+    _playerStatusDisplay = nullptr;
+
     //Destroy window
     SDL_DestroyRenderer(gRenderer);
     SDL_DestroyWindow(gWindow);
