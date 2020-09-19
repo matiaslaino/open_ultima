@@ -1,10 +1,14 @@
 #include "DungeonScreen.h"
 #include "../CommandDisplay.h"
 #include "Door.h"
+#include "Ladder.h"
 #include "../common/ShapeUtils.h"
 #include "../common/Fonts.h"
 #include "../common/Colors.h"
 #include "enemies/Thief.h"
+#include <iostream>
+
+using namespace std;
 
 void DungeonScreen::update(float elapsed) {
     if (!_drawEnabled) {
@@ -141,9 +145,10 @@ void DungeonScreen::draw(SDL_Renderer *renderer) {
         }
     }
 
-    // draw sprites
-    int distance = 0;
-    for (const auto &tile : _vision) {
+    // draw sprites in reverse order so that the closer sprites are drawn on top of the farther ones
+    int distance = _vision.size() - 1;
+    while (distance >= 0) {
+        auto tile = _vision[distance];
 
         if (tile.right == DungeonFeature::Door) {
             Door::draw(renderer, distance, Direction::Right);
@@ -159,17 +164,20 @@ void DungeonScreen::draw(SDL_Renderer *renderer) {
             }
         }
 
-        distance++;
-    }
-
-    distance = 0;
-    for (const auto &tile : _vision) {
-
         if (tile.enemy != nullptr && !tile.enemy->isDead()) {
             tile.enemy->draw(renderer, distance);
         }
 
-        distance++;
+        if (tile.ladder != nullptr) {
+            auto currentOrientation = _gameContext->getPlayer()->getDungeonOrientation();
+            if (currentOrientation == CardinalPoint::East || currentOrientation == CardinalPoint::West) {
+                Ladder::drawFromSide(renderer, distance, tile.ladder->goingUp);
+            } else {
+                Ladder::drawFront(renderer, distance, tile.ladder->goingUp);
+            }
+        }
+
+        distance--;
     }
 }
 
@@ -198,6 +206,9 @@ void DungeonScreen::handle(const SDL_Event &e) {
                 break;
             case SDLK_a:
                 doCombatRound(true);
+                break;
+            case SDLK_k:
+                climbLadder();
                 break;
             default:
                 return;
@@ -228,6 +239,8 @@ void DungeonScreen::moveForward() {
     // If we arrive to this point, we're either inside a door, or in a hallway and can move forward.
     player->dungeonMoveForward();
     CommandDisplay::writeLn("Forward", true);
+
+    cout << "Moved to: " << player->getDungeonX() << ", " << player->getDungeonY() << "\n";
 }
 
 void DungeonScreen::drawLeftWalls(SDL_Renderer *renderer) {
@@ -291,4 +304,29 @@ void DungeonScreen::doMonsterAttack(const shared_ptr<Enemy> &enemy) {
     if (player->isDead()) {
         CommandDisplay::writeLn("You are dead, nothing happens for now! :)", false);
     }
+}
+
+void DungeonScreen::climbLadder() {
+    if (_vision[0].ladder == nullptr) {
+        CommandDisplay::writeLn("K-Limb what?", true);
+        return;
+    }
+
+    auto player = _gameContext->getPlayer();
+    auto currentLevel = player->getDungeonLevel();
+    auto ladder = _vision[0].ladder;
+    if (ladder->goingUp) {
+        if (currentLevel == 0) {
+            _gameContext->setScreen(ScreenType::Overworld);
+        } else {
+            player->setDungeonLevel(--currentLevel);
+            CommandDisplay::writeLn("K-Limb up to level " + to_string(currentLevel), true);
+        }
+    } else {
+        player->setDungeonLevel(++currentLevel);
+        CommandDisplay::writeLn("K-Limb down to level " + to_string(currentLevel), true);
+    }
+
+    player->setDungeonX(ladder->toX);
+    player->setDungeonY(ladder->toY);
 }

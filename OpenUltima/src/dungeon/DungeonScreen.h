@@ -54,5 +54,7 @@ private:
     void doMonsterAttacks();
 
     void doMonsterAttack(const shared_ptr<Enemy>& enemy);
+
+    void climbLadder();
 };
 

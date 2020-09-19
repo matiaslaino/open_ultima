@@ -17,10 +17,23 @@ void Dungeon::randomize() {
     };
     _levels.push_back(levelColumns);
 
-    /*for (int level = 0; level < MAX_LEVEL; level++) {
+    levelColumns = {
+            {DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None},
+            {DungeonFeature::Door, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall},
+            {DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None},
+            {DungeonFeature::Door, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall},
+            {DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None},
+            {DungeonFeature::Door, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall},
+            {DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None},
+            {DungeonFeature::Door, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall, DungeonFeature::Wall},
+            {DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None, DungeonFeature::None},
+    };
+    _levels.push_back(levelColumns);
 
-    }*/
     _enemiesPerLevel.push_back({make_shared<GiantRat>(2, 3)});
+    _laddersPerLevel.push_back({LadderInfo(0, 0, 0, 3, false)});
+    _laddersPerLevel.push_back({LadderInfo(0, 3, 0, 0, true)});
+
 }
 
 DungeonFeature Dungeon::lookLeftFromEast(vector<vector<DungeonFeature>> levelFeatures, int x, int y) {
@@ -91,6 +104,15 @@ vector<VisibleDungeonSpace> Dungeon::getVisible(int level, int x, int y, Cardina
     auto dungeonSpace = VisibleDungeonSpace(levelFeatures[x][y],
                                             lookLeft(levelFeatures, x, y, viewDirection),
                                             lookRight(levelFeatures, x, y, viewDirection));
+
+    // See if there is a ladder where we're standing.
+    // I don't like that I'm doing this check again later for other tiles.
+    for (const auto &ladder : _laddersPerLevel[level]) {
+        if (ladder.fromX == x && ladder.fromY == y) {
+            dungeonSpace.ladder = make_shared<LadderInfo>(ladder);
+        }
+    }
+
     visibleSpaces.push_back(dungeonSpace);
 
     while (i < MAX_VISIBILITY && !wall) {
@@ -139,12 +161,21 @@ vector<VisibleDungeonSpace> Dungeon::getVisible(int level, int x, int y, Cardina
                                            leftFeature,
                                            rightFeature);
 
-        bool foundNpc = false;
-        int npcIndex = 0;
-        while (!foundNpc && npcIndex < _enemiesPerLevel[level].size()) {
-            auto enemy = _enemiesPerLevel[level][npcIndex++];
-            if (enemy->getX() == visibleTileX && enemy->getY() == visibleTileY && !enemy->isDead()) {
-                dungeonSpace.enemy = enemy;
+        if (level < _enemiesPerLevel.size()) {
+            for (const auto &enemy : _enemiesPerLevel[level]) {
+                if (enemy->getX() == visibleTileX && enemy->getY() == visibleTileY && !enemy->isDead()) {
+                    dungeonSpace.enemy = enemy;
+                    break;
+                }
+            }
+        }
+
+        if (level < _laddersPerLevel.size()) {
+            for (const auto &ladder : _laddersPerLevel[level]) {
+                if (ladder.fromX == visibleTileX && ladder.fromY == visibleTileY) {
+                    dungeonSpace.ladder = make_shared<LadderInfo>(ladder);
+                    break;
+                }
             }
         }
 

@@ -7,6 +7,7 @@
 #include "VisibleDungeonSpace.h"
 #include "DungeonFeature.h"
 #include "enemies/Enemy.h"
+#include "LadderInfo.h"
 
 using namespace std;
 
@@ -20,6 +21,8 @@ public:
 
     vector<shared_ptr<Enemy>> getLevelEnemies(int level) { return _enemiesPerLevel[level]; }
 
+    vector<LadderInfo> getLevelLadders(int level) { return _laddersPerLevel[level]; }
+
 private:
     static constexpr int SIZE = 9;
     static constexpr int WALLS = 4;
@@ -31,6 +34,7 @@ private:
     string _name;
     // level -> column -> cell (9 cells)
     vector<vector<vector<DungeonFeature>>> _levels;
+    vector<vector<LadderInfo>> _laddersPerLevel;
 
     DungeonFeature lookLeftFromEast(vector<vector<DungeonFeature>> levelFeatures, int x, int y);
 
@@ -52,4 +56,3 @@ private:
 
     DungeonFeature lookRight(vector<vector<DungeonFeature>> levelFeatures, int x, int y, CardinalPoint point);
 };
-

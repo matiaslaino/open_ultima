@@ -4,6 +4,8 @@
 #include <utility>
 #include "DungeonFeature.h"
 #include "enemies/Enemy.h"
+#include "Ladder.h"
+#include "LadderInfo.h"
 
 using namespace std;
 
@@ -17,4 +19,5 @@ public:
     DungeonFeature left;
     DungeonFeature right;
     shared_ptr<Enemy> enemy = nullptr;
+    shared_ptr<LadderInfo> ladder = nullptr;
 };
