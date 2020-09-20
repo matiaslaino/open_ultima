@@ -21,11 +21,17 @@ void DungeonScreen::update(float elapsed) {
 }
 
 void DungeonScreen::draw(SDL_Renderer *renderer) {
+    ShapeUtils::drawRoundedCorners(renderer);
+    ShapeUtils::drawDungeonBorders(renderer);
+
     _orientationLabel->loadFromRenderedText(Fonts::standard(), renderer, CardinalPointUtils::toString(
             _gameContext->getPlayer()->getDungeonOrientation()), Colors::TEXT_COLOR);
     _orientationLabel->render(renderer, 144, 150);
 
-    ShapeUtils::drawDungeonBorders(renderer);
+    _levelLabel->loadFromRenderedText(Fonts::standard(), renderer,
+                                      "Level  " + to_string(_gameContext->getPlayer()->getDungeonLevel() + 1),
+                                      Colors::TEXT_COLOR);
+    _levelLabel->render(renderer, 272 / 2, -2);
 
     // TODO: not too happy with the viewport thingy
     SDL_Rect defaultViewport = {MAIN_VIEWPORT_PADDING, MAIN_VIEWPORT_PADDING, WIDTH, HEIGHT};
@@ -318,13 +324,14 @@ void DungeonScreen::climbLadder() {
     if (ladder->goingUp) {
         if (currentLevel == 0) {
             _gameContext->setScreen(ScreenType::Overworld);
+            CommandDisplay::writeLn("K-Limb up to level " + to_string(currentLevel), true);
         } else {
             player->setDungeonLevel(--currentLevel);
-            CommandDisplay::writeLn("K-Limb up to level " + to_string(currentLevel), true);
+            CommandDisplay::writeLn("K-Limb up to level " + to_string(currentLevel + 1), true);
         }
     } else {
         player->setDungeonLevel(++currentLevel);
-        CommandDisplay::writeLn("K-Limb down to level " + to_string(currentLevel), true);
+        CommandDisplay::writeLn("K-Limb down to level " + to_string(currentLevel + 1), true);
     }
 
     player->setDungeonX(ladder->toX);

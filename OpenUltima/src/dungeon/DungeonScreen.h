@@ -39,7 +39,7 @@ private:
     float _drawCounter = 0;
     int _drawEnabled = true;
     unique_ptr<LTexture> _orientationLabel = make_unique<LTexture>();
-    unique_ptr<LTexture> levelLabel = make_unique<LTexture>();
+    unique_ptr<LTexture> _levelLabel = make_unique<LTexture>();
 
     void moveForward();
 
